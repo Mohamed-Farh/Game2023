@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="col-12">
+        <div class="card-body align-items-center">
+            <form action="{{ route('admin.players.showTransitions', $player->id) }}" method="get">
+                <div class="row  align-items-center">
+                    <div class="col-6">
+                        <div class="form-group input-icon">
+                            <input type="text" name="keyword" value="{{ old('keyword', request()->input('keyword')) }}" class="form-control form-control-solid" placeholder="ابحث من هنا ...">
+                            <span>
+                                <i class="flaticon2-search-1 text-muted"></i>
+                            </span>
+                        </div>
+                    </div>
+{{--                    <div class="col-2">--}}
+{{--                        <div class="form-group">--}}
+{{--                            <select name="send" class="form-control form-control-solid">--}}
+{{--                                <option value="">الحالة</option>--}}
+{{--                                <option value="1" {{ old('send', request()->input('send')) == '1' ? 'selected' : '' }}>مرسل</option>--}}
+{{--                                <option value="0" {{ old('send', request()->input('send')) == '0' ? 'selected' : ''  }}>مستقبل</option>--}}
+{{--                            </select>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+{{--                    <div class="col-2">--}}
+{{--                        <div class="form-group">--}}
+{{--                            <select name="sort_by" class="form-control form-control-solid">--}}
+{{--                                <option value="">الترتيب</option>--}}
+{{--                                <option value="id" {{ old('sort_by', request()->input('sort_by')) == 'id' ? 'selected' : '' }}>الرقم</option>--}}
+{{--                                <option value="first_name" {{ old('sort_by', request()->input('sort_by')) == 'name' ? 'selected' : ''  }}>الاسم الاول</option>--}}
+{{--                                <option value="last_name"  {{ old('sort_by', request()->input('sort_by')) == 'name' ? 'selected' : ''  }}>الاسم الاخير</option>--}}
+{{--                                <option value="created_at" {{ old('sort_by', request()->input('sort_by')) == 'created_at' ? 'selected' : ''  }}>تاريخ الاضافة</option>--}}
+{{--                            </select>--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
+                    <div class="col-2">
+                        <div class="form-group">
+                            <select name="order_by" class="form-control form-control-solid">
+                                <option value="">العرض</option>
+                                <option value="asc" {{ old('order_by', request()->input('order_by')) == 'asc' ? 'selected' : '' }}>تصاعدي</option>
+                                <option value="desc" {{ old('order_by', request()->input('order_by')) == 'desc' ? 'selected' : ''  }}>تنازلي</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <select name="limit_by" class="form-control form-control-solid">
+                                <option value="">عدد الصفوف</option>
+                                <option value="10" {{ old('limit_by', request()->input('limit_by')) == '10' ? 'selected' : '' }}>10</option>
+                                <option value="20" {{ old('limit_by', request()->input('limit_by')) == '20' ? 'selected' : ''  }}>20</option>
+                                <option value="50" {{ old('limit_by', request()->input('limit_by')) == '50' ? 'selected' : ''  }}>50</option>
+                                <option value="100" {{ old('limit_by', request()->input('limit_by')) == '100' ? 'selected' : ''  }}>100</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <button type="submit" name="submit" class="form-control btn btn-light-primary px-6 font-weight-bold">بحث</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

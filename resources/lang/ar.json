@@ -1,0 +1,6 @@
+{
+    "paid": "تم السداد",
+    "unpaid": "لم تٌسدد",
+    "exceed_the_allowed_limit": "لقد تجاوزت حد الشراء الخاص بك",
+    "unavailable_purchase_process": "عملية الشراء غير متاحة"
+}
