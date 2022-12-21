@@ -55,7 +55,7 @@ class NineGameController extends Controller
         }
         if(isset($request ->win_numbers)){
             if(count(explode(',', $request->win_numbers)) != $request->no_of_win_numbers){
-                Alert::error('عدد الارقام الفائزه لا يتناسب مع الارقام المدخلة', 'Error Message');
+                Alert::error('عدد الارقام الفائزة لا يتناسب مع الارقام المدخلة', 'Error Message');
                 return redirect()->back();
             }
         }

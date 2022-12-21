@@ -66,8 +66,6 @@ class AuthController extends Controller
             }
             while(!$is_code->isEmpty());
 
-            $input['first_name']    = $request->first_name;
-            $input['last_name']     = $request->last_name;
             $input['username']      = $request->username;
             $input['email']         = $request->email ?? null ;
             $input['email_verified_at']  = $request->email != null ? \Illuminate\Support\Carbon::now() : null;
@@ -104,7 +102,7 @@ class AuthController extends Controller
             $data =[
                 'otp_code' => $otp_code,
             ];
-            return $this->successMessage( $data,'Player Account Created Successfully, Please Check Your Phone To Verfiy Your Phone Number');
+            return $this->successMessage( $data,'Player Account Created Successfully, Please Check Your Phone To Verify Your Phone Number');
 
         }catch (\Exception $e){
             DB::rollback();
@@ -122,7 +120,7 @@ class AuthController extends Controller
             }else{
                 $player->update([
                     "mobile_verify" => 1 ,
-                    "otp_code" => '' ,
+                    "otp_code" => null ,
                     'account_status' => 1,
                     'active' => 1
                 ]);

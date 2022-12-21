@@ -64,8 +64,7 @@ class HundredGameController extends Controller
         try {
             // Game data
             $input['no_of_win_numbers'] = $request->no_of_win_numbers;
-//            $input['win_numbers']       = $request->win_numbers;
-            $input['win_numbers']       = '['.$request->win_numbers.']';
+            $input['win_numbers']       = explode(',', $request->win_numbers);
             $input['timer']             = $request->timer;
             $input['start']             = $request->start;
             $input['end']               = $request->end;
