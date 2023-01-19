@@ -9,6 +9,7 @@
         "beyondcode/laravel-websockets": "^1.12",
         "cviebrock/eloquent-sluggable": "^8.0",
         "darryldecode/cart": "^4.2",
+        "fouladgar/laravel-otp": "^1.0",
         "freshbitsweb/laravel-cart-manager": "^v1.4.0",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "7.2",

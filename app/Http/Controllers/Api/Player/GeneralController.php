@@ -3,19 +3,24 @@
 namespace App\Http\Controllers\Api\Player;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\PriceDetailsRequest;
 use App\Http\Resources\AppStartPageResource;
 use App\Http\Resources\EmailResource;
 use App\Http\Resources\InformationResource;
+use App\Http\Resources\NotificationResource;
 use App\Http\Resources\PhoneResource;
 use App\Http\Resources\PlayerPriceResource;
+use App\Http\Resources\PriceResource;
 use App\Http\Resources\SocialMediaResource;
 use App\Http\Resources\UnitResource;
 use App\Models\AppStartPage;
 use App\Models\ContactMessage;
 use App\Models\Email;
 use App\Models\Information;
+use App\Models\Notification;
 use App\Models\Phone;
 use App\Models\PlayerPrice;
+use App\Models\Price;
 use App\Models\SocialMedia;
 use App\Models\Unit;
 use App\Models\UserAddress;
@@ -90,7 +95,7 @@ class GeneralController extends Controller
             $input['message']          = $request->message;
             $input['status']          = '1';
             ContactMessage::create($input);
-            return $this->returnSuccessMessage('Your Message Was Sent Successfully !');
+            return $this->returnSuccessMessage('تم إرسال رسالتكم بنجاح');
 
         }catch (\Exception $e) {
             return $this->returnErrorMessage('Sorry! Please Try Again !', '422');
@@ -101,16 +106,35 @@ class GeneralController extends Controller
     //***********************************    Home   ***************************************************
     public function latestWinGame()
     {
-//        return 0;
-
         $latest_price = PlayerPrice::where('user_id', \auth()->id())
             ->whereActive(1)
             ->first();
         if($latest_price){
-            return $this->successMessage(new PlayerPriceResource($latest_price), 'Latest Player Price');
+            return $this->successMessage(new PlayerPriceResource($latest_price), 'أخر جائزة قمت بالفوز بها');
         }else{
             return $this->returnSuccessMessage('لم تفز بأي جائزة مسبقاً');
         }
 
+    }
+
+    public function priceDetails(PriceDetailsRequest $request)
+    {
+        $price = Price::whereId($request->id)->first();
+        return $this->successMessage(new PriceResource($price), 'بيانات الجائزة');
+    }
+
+    public function myNotifications(Request $request)
+    {
+        $player = \auth()->user();
+        $notifications = $player->notification;
+        return $this->successMessage(NotificationResource::collection($notifications), 'الإشعارات');
+    }
+    public function readNotification(Request $request)
+    {
+        $notification = Notification::whereId($request->id)->first();
+        $notification->update([
+            'read_at' => now(),
+        ]);
+        return $this->returnSuccessMessage('تم تغيير حالة الإشعار الي مقروء');
     }
 }

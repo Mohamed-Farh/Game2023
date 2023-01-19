@@ -57,6 +57,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     /* Home */
     Route::group(['prefix' => 'home', 'as'=>'home.' ], function(){
         Route::get('/latest-win-game', [GeneralController::class, 'latestWinGame']);
+        Route::get('/price-details', [GeneralController::class, 'priceDetails']);
+        Route::get('/my-notifications', [GeneralController::class, 'myNotifications']);
+        Route::get('/read-notification', [GeneralController::class, 'readNotification']);
     });
 
 

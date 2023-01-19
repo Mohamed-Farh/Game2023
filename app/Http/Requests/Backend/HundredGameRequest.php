@@ -30,7 +30,7 @@ class HundredGameRequest extends FormRequest
                     'no_of_win_numbers' => ['required', 'integer'],
                     'win_numbers' => ['required'],
                     'timer' => ['required'],
-                    'start' => ['required', 'after_or_equal:now'],
+//                    'start' => ['required', 'after_or_equal:now'],
                     'end' => ['required', 'after:start'],
                     'image' => ['nullable', 'mimes:png,jpg,jpeg,svg|', 'max:5048'],
 
@@ -49,7 +49,7 @@ class HundredGameRequest extends FormRequest
                     'no_of_win_numbers' => ['required', 'integer'],
                     'win_numbers' => ['required'],
                     'timer' => ['required'],
-                    'start' => ['required', 'after_or_equal:now'],
+//                    'start' => ['required', 'after_or_equal:now'],
                     'end' => ['required', 'after:start'],
 
                     'price_name' => ['required'],

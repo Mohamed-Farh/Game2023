@@ -26,6 +26,11 @@ class Price extends Model
         'image',
     ];
 
+    public function notification()
+    {
+        return $this->MorphMany(Notification::class, 'notifiable');
+    }
+
     public function hundredGame(): BelongsTo
     {
         return $this->belongsTo(HundredGame::class, 'game_id', 'id');

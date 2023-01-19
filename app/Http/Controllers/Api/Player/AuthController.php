@@ -47,6 +47,19 @@ class AuthController extends Controller
             }
             $token = auth()->user()->createToken($request->deviceId)->plainTextToken;
             $player -> token = $token;
+
+            /*** Start Notification ****/
+            Carbon::setLocale('ar');
+            $player->notification()->create([
+                'type'              => "تسجيل دخول",
+                'notifiable_type'   => "User",
+                'notifiable_id'     => $player->id,
+                'content'           => 'لقد تم تسجيل الدخول الي حسابك في يوم '. Carbon::parse(now())->translatedFormat('l j F Y H:i:s'),
+                'icon'              => 'images/icon/login.png',
+                'read_at'           => null,
+            ]);
+            /*** End Notification ****/
+
             return $this->successMessage($player, 'Login Successfully');
 
         } else {
@@ -126,6 +139,19 @@ class AuthController extends Controller
                 ]);
                 $token = $player->createToken($request->deviceId)->plainTextToken;
                 $player->token = $token;
+
+                /*** Start Notification ****/
+                Carbon::setLocale('ar');
+                $player->notification()->create([
+                    'type'              => "إنشاء حساب جديد",
+                    'notifiable_type'   => "User",
+                    'notifiable_id'     => $player->id,
+                    'content'           => 'تهانينا, لقد تم إنشاء حساب جديد بنجاح',
+                    'icon'              => 'images/icon/hi.png',
+                    'read_at'           => null,
+                ]);
+                /*** End Notification ****/
+
                 return $this->successMessage(new PlayerResource($player), 'Phone has been verified');
             }
         } catch (Throwable $e) {
