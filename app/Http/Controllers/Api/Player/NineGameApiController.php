@@ -3,65 +3,61 @@
 namespace App\Http\Controllers\Api\Player;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\HundredGameDetailsRequest;
-use App\Http\Requests\Api\StartHundredGameRequest;
-use App\Http\Resources\HundredGameDetailsResource;
-use App\Http\Resources\HundredGameResource;
+use App\Http\Requests\Api\NineGameDetailsRequest;
+use App\Http\Requests\Api\StartNineGameRequest;
+use App\Http\Resources\NineGameDetailsResource;
+use App\Http\Resources\NineGameResource;
 use App\Http\Resources\PriceResource;
 use App\Models\GamePlayer;
 use App\Models\GameVote;
-use App\Models\HundredGame;
+use App\Models\NineGame;
 use App\Models\PlayerPrice;
 use App\Traits\GeneralTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
-class HundredGameApiController extends Controller
+class NineGameApiController extends Controller
 {
     use GeneralTrait;
 
-    public function currentHundredGame(Request $request)
+    public function currentNineGame(Request $request)
     {
-//        $hundred =  HundredGame::where('start', '<=', Carbon::now())
-//                                ->where('end', '>=', Carbon::now())
-//                                ->where('active', 1)
-//                                ->first();
-        $hundred = HundredGame::currentHundredGame()->first();
-        return $this->successMessage(new HundredGameResource($hundred), 'Available Hundred Number Game');
+        $nine = NineGame::currentNineGame()->first();
+        return $this->successMessage(new NineGameResource($nine), 'Available Nine Number Game');
     }
 
-    public function hundredGameDetails(HundredGameDetailsRequest $request)
+    public function nineGameDetails(NineGameDetailsRequest $request)
     {
-        $hundred = HundredGame::whereId($request->id)->first();
-        return $this->successMessage(new HundredGameDetailsResource($hundred), 'Hundred Number Game Details');
+        $nine = NineGame::whereId($request->id)->first();
+        return $this->successMessage(new NineGameDetailsResource($nine), 'Nine Number Game Details');
     }
 
     public function currentPrice(Request $request)
     {
-        $currentHundredGame = HundredGame::currentHundredGame()->first();
-        $currentPrice = $currentHundredGame->currentPrice() ?? $currentHundredGame->basicPrice();
+        $currentNineGame = NineGame::currentNineGame()->first();
+        $currentPrice = $currentNineGame->currentPrice() ?? $currentNineGame->basicPrice();
         return $this->successMessage(new PriceResource($currentPrice), 'Available Price');
     }
 
-    public function startHundredGame(Request $request)
+    public function startNineGame(Request $request)
     {
         /** Current Game & Price **/
-        $currentHundredGame = HundredGame::currentHundredGame()->first();
-        $currentPrice = $currentHundredGame->currentPrice();
+        $currentNineGame = NineGame::currentNineGame()->first();
+        $currentPrice = $currentNineGame->currentPrice();
 
         /** Check If Player Win This Game Before **/
         $winGameBefore = GamePlayer::where('user_id', \auth()->id())
-            ->where('game_id', $currentHundredGame->id)
-            ->where('game_type', 'hundred')
+            ->where('game_id', $currentNineGame->id)
+            ->where('game_type', 'nine')
             ->where('win', 1)
             ->first();
 
         if(!$winGameBefore){
             /** Check If Game Started Before Or Not ? **/
             $openGameBefore = GamePlayer::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentNineGame->id)
+                ->where('game_type', 'nine')
                 ->where('numbers', null)
                 ->where('timer', '00:00:00')
                 ->where('play', 0)
@@ -71,8 +67,8 @@ class HundredGameApiController extends Controller
                 //Start As Player
                 $openGameNow = GamePlayer::create([
                     'user_id' => \auth()->id(),
-                    'game_id' => $currentHundredGame->id,
-                    'game_type' => 'hundred',
+                    'game_id' => $currentNineGame->id,
+                    'game_type' => 'nine',
                     'price_id' => $currentPrice->id,
                     'timer' => '00:00:00',
                     'numbers' => null,
@@ -87,8 +83,8 @@ class HundredGameApiController extends Controller
         }elseif($winGameBefore){
             //Start As Vote
             $openVoteBefore = GameVote::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentNineGame->id)
+                ->where('game_type', 'nine')
                 ->where('numbers', null)
                 ->where('price_id', $currentPrice->id)
                 ->where('vote', 0)
@@ -96,8 +92,8 @@ class HundredGameApiController extends Controller
             if(!$openVoteBefore){
                 $openVottingNow = GameVote::create([
                     'user_id' => \auth()->id(),
-                    'game_id' => $currentHundredGame->id,
-                    'game_type' => 'hundred',
+                    'game_id' => $currentNineGame->id,
+                    'game_type' => 'nine',
                     'price_id' => $currentPrice->id,
                     'numbers' => null,
                 ]);
@@ -111,17 +107,17 @@ class HundredGameApiController extends Controller
     }
 
 
-    public function playHundredGame(Request $request)
+    public function playNineGame(Request $request)
     {
 
         /** جلب اللعبة الحالية و الجائزة الحالية */
-        $currentHundredGame = HundredGame::currentHundredGame()->first();
-        $currentPrice = $currentHundredGame->currentPrice();
+        $currentNineGame = NineGame::currentNineGame()->first();
+        $currentPrice = $currentNineGame->currentPrice();
 
         /** هل هذا اللاعب قام بالفوز بهذة اللعبة من قبل */
         $winGameBefore = GamePlayer::where('user_id', \auth()->id())
-            ->where('game_id', $currentHundredGame->id)
-            ->where('game_type', 'hundred')
+            ->where('game_id', $currentNineGame->id)
+            ->where('game_type', 'nine')
             ->where('win', 1)
             ->first();
 
@@ -133,8 +129,8 @@ class HundredGameApiController extends Controller
         /** لو لم يكسب من قبل هذه اللعبة, يتم تسجيله كلاعب في هذة الجولة */
         if(!$winGameBefore){
             $playGameBefore = GamePlayer::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentNineGame->id)
+                ->where('game_type', 'nine')
                 ->where('active', 1)
                 ->where('play', 0)
                 ->where('win', 0)
@@ -145,17 +141,17 @@ class HundredGameApiController extends Controller
             {
                 $this->validate($request, [
                     'numbers' => 'required',
-                    'timer' => 'required',
+                     'timer' => 'required',
                 ]);
 
                 /** هل قام اللاعب بالبدء باللعبة و اختيار الارقام و لم يتعد الوقت المسموح له في اللعب */
-                if( ($currentHundredGame->timer) >= ($request->timer) )
+                if( ($currentNineGame->timer) >= ($request->timer) )
                 {
                     /** هل عدد الارقام المدخلة اصبح يساوي العدد المطلوب من الارقام للفوز باللعبة */
-                    if( ($currentHundredGame->no_of_win_numbers) == count($request->numbers)) {
+                    if( ($currentNineGame->no_of_win_numbers) == count($request->numbers)) {
                         //**** check if win or lose
 
-                        if (($currentHundredGame->win_numbers) === $request_numbers) {
+                        if (($currentNineGame->win_numbers) === $request_numbers) {
                             $playGameBefore->update([
                                 'numbers' => $request_numbers,
                                 'timer' => $request->timer,
@@ -181,14 +177,14 @@ class HundredGameApiController extends Controller
                             return $this->returnSuccessMessage('You Lose The Game, Good Luck Next Time');
                         }
 
-                    }elseif( ($currentHundredGame->no_of_win_numbers) < count($request->numbers)){
+                    }elseif( ($currentNineGame->no_of_win_numbers) < count($request->numbers)){
                         return $this->returnErrorMessage('لقد قمت بإدخال عدد من الارقام أكبر من المطلوب', '422');
 
                     }else{
                         /** يتم ادخال الارقام و جلب العمليات السابقة لهذا اللاعب لإلغاء اختيار الارقام الخاطئة مرة أخري */
                         $previousPlayerNumbers = GamePlayer::where('user_id', \auth()->id())
-                            ->where('game_id', $currentHundredGame->id)
-                            ->where('game_type', 'hundred')
+                            ->where('game_id', $currentNineGame->id)
+                            ->where('game_type', 'nine')
                             ->where('numbers', '!=', null)
                             ->where('active', 1)
                             ->where('play', 1)
@@ -216,7 +212,7 @@ class HundredGameApiController extends Controller
                                 //TODO:*******
                             }
                             $data = [
-                                'disabled_previous_choosen_numbers' =>  $disabledPreviousNumbers,
+                                 'disabled_previous_choosen_numbers' =>  $disabledPreviousNumbers,
                             ];
                             return $this->successMessage($data, 'The wrong numbers chosen in previous attempts');
                         }else{
@@ -230,7 +226,7 @@ class HundredGameApiController extends Controller
                             return $this->successMessage($data, 'First Try, The wrong numbers chosen in previous attempts');
                         }
                     }
-                }elseif( ($currentHundredGame->timer) < ($request->timer) ){
+                }elseif( ($currentNineGame->timer) < ($request->timer) ){
                     $playGameBefore->update([
                         'numbers' => null,
                         'timer' => $request->timer,
@@ -246,8 +242,8 @@ class HundredGameApiController extends Controller
         }elseif($winGameBefore){
             /**  لو كسب من قبل هذه اللعبة, يتم تسجيله كرأي جَمهور في هذة الجولة */
             $voteGameBefore = GameVote::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentNineGame->id)
+                ->where('game_type', 'nine')
                 ->where('vote', 0)
                 ->where('active', 1)
                 ->first();
@@ -258,7 +254,7 @@ class HundredGameApiController extends Controller
                     'numbers' => 'required',
                 ]);
 
-                if( ($currentHundredGame->no_of_win_numbers) == count($request->numbers))
+                if( ($currentNineGame->no_of_win_numbers) == count($request->numbers))
                 {
                     $voteGameBefore->update([
                         'numbers' => $request_numbers,
@@ -279,20 +275,20 @@ class HundredGameApiController extends Controller
     public function getVoting(Request $request)
     {
         /**  جلب اللعبة الحالية */
-        $currentHundredGame = HundredGame::currentHundredGame()->first();
+        $currentNineGame = NineGame::currentNineGame()->first();
 
         /**  هل هذا اللاعب قام بالفوز بهذة اللعبة من قبل */
         $winGameBefore = GamePlayer::where('user_id', \auth()->id())
-            ->where('game_id', $currentHundredGame->id)
-            ->where('game_type', 'hundred')
+            ->where('game_id', $currentNineGame->id)
+            ->where('game_type', 'nine')
             ->where('win', 1)
             ->first();
 
         /** لو لم يكسب من قبل هذه اللعبة, يتم تسجيله كلاعب في هذة الجولة */
         if(!$winGameBefore){
             $playGameBefore = GamePlayer::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentNineGame->id)
+                ->where('game_type', 'nine')
                 ->where('numbers', null)
                 ->where('active', 1)
                 ->where('play', 0)
@@ -312,8 +308,8 @@ class HundredGameApiController extends Controller
                     return intval($arr);
                 }, $request_numbers);
 
-                $previousPlayerVotesNumbers = GameVote::where('game_id', $currentHundredGame->id)
-                    ->where('game_type', 'hundred')
+                $previousPlayerVotesNumbers = GameVote::where('game_id', $currentNineGame->id)
+                    ->where('game_type', 'nine')
                     ->where('numbers', '!=', null)
                     ->where('active', 1)
                     ->where('vote', 1)
@@ -334,7 +330,7 @@ class HundredGameApiController extends Controller
 
                                 $key_for_next_number =count($request_numbers);
 //                                if( isset($previousPlayerVotesNumber[$key_for_next_number]) && !in_array($previousPlayerVotesNumber[$key_for_next_number],$playersVoteNumbers))
-                                array_push($playersVoteNumbers, $previousPlayerVotesNumber[$key_for_next_number]);
+                                    array_push($playersVoteNumbers, $previousPlayerVotesNumber[$key_for_next_number]);
                             }
                         }
                         //TODO:*******

@@ -1,6 +1,6 @@
 @extends('layouts.auth_admin_app')
 
-@section('title', 'قائمة الجوائز ال100 رقم')
+@section('title', 'المتجر')
 
 @section('style')
     <style>
@@ -12,90 +12,97 @@
             border: 1px solid darkblue;
             border-radius: 3px;
         }
+
+        table.dataTable tr.selected td.select-checkbox:after,
+        table.dataTable tr.selected th.select-checkbox:after {
+            content: "✓";
+            font-size: 20px;
+            margin-top: 6px;
+            margin-left: 0px;
+            text-align: center;
+            text-shadow: 1px 1px #b0bed9, -1px -1px #b0bed9, 1px -1px #b0bed9, -1px 1px #b0bed9;
+        }
     </style>
 @endsection
 
 @section('content')
 
+
     <div class="container">
         <div class="row ">
             <div class="col-6 d-flex text-left">
-                <h1 class=" text-left"> قائمة الجوائز ال100 رقم</h1>
+                <h1 class=" text-left">المتجر</h1>
             </div>
             <div class="col-6 d-flex justify-content-end">
-                <a href="{{ route('admin.prices.create', ['hundredGame' => $hundredGame]) }}" class="btn btn-primary font-weight-bolder">
+                @ability('superAdmin', 'manage_shop,create_shop')
+                <a href="{{ route('admin.shops.create') }}" class="btn btn-primary font-weight-bolder">
                     <span class="svg-icon svg-icon-md">
+                        <!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px"
-                             height="24px" viewBox="0 0 24 24" version="1.1">
+                            height="24px" viewBox="0 0 24 24" version="1.1">
                             <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                <rect x="0" y="0" width="24" height="24"/>
-                                <circle fill="#000000" cx="9" cy="15" r="6"/>
+                                <rect x="0" y="0" width="24" height="24" />
+                                <circle fill="#000000" cx="9" cy="15" r="6" />
                                 <path
                                     d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z"
-                                    fill="#000000" opaphone="0.3"/>
+                                    fill="#000000" opacountry="0.3" />
                             </g>
                         </svg>
                         <!--end::Svg Icon-->
                     </span>
                     عنصر جديد
                 </a>
+                @endability
             </div>
         </div>
 
-
-        <div class="row">
-            <div class="col-12">
-                <div class="card-body align-items-center">
-                </div>
-            </div>
-        </div>
+        @include('backend.shops.filter')
 
         <div class="row">
             <div class="col-12">
                 <table class="table table-bordered table-hover table-striped table-light yajra-datatable">
                     <thead class="table-dark ">
                         <tr class="text-light">
-                            <th class="text-light">#</th>
+                            <th class="text-light">No</th>
                             <th class="text-light">الصورة</th>
-                            <th class="text-light">الأسم</th>
-                            <th class="text-light">القيمة</th>
-                            <th class="text-light">رئيسية</th>
+                            <th class="text-light">اسم العرض</th>
+                            <th class="text-light">التوكن</th>
+                            <th class="text-light">التكلفة</th>
                             <th class="text-light">وقت وتاريخ البداية</th>
                             <th class="text-light">وقت وتاريخ النهاية</th>
                             <th class="text-light">الحالة</th>
-                            <th class="text-light">التحكم</th>
+                            <th class="text-light">العمليات</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($prices as $k => $item)
-                            <tr role="row" class="odd">
-                                <td class="sorting_1">{{ $loop->iteration }}</td>
-                                <td class="text-center">
-                                    @if ($item->image != '')
-                                        <img class="rounded" width="110" height="60"
-                                             src="{{ asset($item->image) }}">
-                                    @else
-                                        <span class="symbol symbol-lg-35 symbol-25 symbol-light-success">
-                                                <span class="symbol-label font-size-h5 font-weight-bold">{{ substr( $item->name, 0, 1) }}</span>
-                                            </span>
-                                    @endif
-                                </td>
-                                <td>
-                                    {{ $item->name }}
-                                    <p class="text-gray-400"><b>كود الجائزة: {{ $item->code }}</b></p>
-                                </td>
-                                <td>{{ $item->value }}</td>
-                                <td>
-                                    @if( $item->basic != 1 )
-                                        <span class="label label-lg font-weight-bold label-light-primary label-inline" >عادية</span>
-                                    @else
-                                        <span class="label label-lg font-weight-bold label-light-info label-inline" >رئيسية</span>
-                                    @endif
-                                </td>
-                                <td>{{ $item->start_time }}</td>
-                                <td>{{ $item->end_time }}</td>
-                                @ability('superAdmin', 'manage_prices,edit_prices')
-                                    <td class="text-center">
+                    @foreach ($shops as $k => $item)
+                        <tr role="row" class="odd">
+                            <td class="sorting_1">{{ $loop->iteration }}</td>
+                            <td class="text-center">
+                                @if ($item->image != '')
+                                    <img class="rounded" width="80" height="60"
+                                         src="{{ asset($item->image) }}">
+                                @else
+                                    <img class="rounded" width="80" height="60"
+                                         src="{{ asset('images/icon/gift.png') }}">
+                                @endif
+                            </td>
+                            <td>
+                                {{ $item->name }}
+                                <p class="text-gray-400"><b>كود العرض: {{ $item->code }}</b></p>
+                            </td>
+                            <td>{{ $item->win_tokens }}</td>
+                            <td>
+                                @if( $item->free == 1 )
+                                    <span class="label label-lg font-weight-bold label-light-primary label-inline" >مجانية</span>
+                                @else
+                                    <span class="label label-lg font-weight-bold label-light-info label-inline" >{{ $item->cost }}</span>
+                                @endif
+                            </td>
+                            <td>{{ $item->start_time }}</td>
+                            <td>{{ $item->end_time }}</td>
+                            @ability('superAdmin', 'manage_shops,edit_shops')
+                            <td class="text-center">
                                         <span class="switch switch-icon">
                                             <label>
                                                 <input data-id="{{ $item->id }}" class="status-class" type="checkbox"
@@ -106,13 +113,13 @@
                                                 <span></span>
                                             </label>
                                         </span>
-                                    </td>
-                                @endability
+                            </td>
+                            @endability
 
-                                <td nowrap="nowrap">
-                                    @if( $item->basic != 1 )
-                                        <a href="{{ route('admin.prices.edit', $item->id) }}"
-                                           class="btn btn-sm btn-clean btn-icon mr-2" title="Edit details">
+                            <td nowrap="nowrap">
+                                @if( $item->basic != 1 )
+                                    <a href="{{ route('admin.shops.edit', $item->id) }}"
+                                       class="btn btn-sm btn-clean btn-icon mr-2" title="Edit details">
                                             <span class="svg-icon svg-icon-md">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                      xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
@@ -130,9 +137,9 @@
                                                     </g>
                                                 </svg>
                                             </span>
-                                        </a>
+                                    </a>
 
-                                        <a href="javascript:void(0)" onclick="
+                                    <a href="javascript:void(0)" onclick="
                                                         if (confirm('Are You Sure You Want To Delete This Record ?') )
                                                             { document.getElementById('record_delete_{{ $item->id }}').submit(); }
                                                         else
@@ -156,25 +163,54 @@
                                                     </g>
                                                 </svg>
                                             </span>
-                                        </a>
-                                        <form action="{{ route('admin.prices.destroy', $item->id) }}" method="post" id="record_delete_{{ $item->id }}" class="d-none">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
+                                    </a>
+                                    <form action="{{ route('admin.shops.destroy', $item->id) }}" method="post" id="record_delete_{{ $item->id }}" class="d-none">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
                     </tbody>
                 </table>
                 {{-- Pagination --}}
-{{--                <div class="d-flex justify-content-center">--}}
-{{--                    {!! $prices->links() !!}--}}
-{{--                </div>--}}
+                <div class="d-flex justify-content-center">
+                    {!! $shops->appends(request()->input())->links() !!}
+                </div>
             </div>
         </div>
     </div>
+    <script>
+        $(function () {
+            $('.status-class').change(function() {
+                console.log("success");
+                var status = $(this).prop('checked') == true ? 1 : 0;
+                var cat_id = $(this).data('id');
 
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: '{{ route('admin.shops.changeStatus') }}',
+                    data: {
+                        'status': status,
+                        'cat_id': cat_id
+                    },
+                    success: function(data) {
+                        Swal.fire({
+                            title: 'Status Change Successfully',
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        })
+                    }
+                });
+            })
+        });
+    </script>
 @endsection
 @section('script')
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
@@ -187,7 +223,7 @@
     <script src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
 
     <script type="text/javascript">
-        $(function () {
+        $(function() {
             let languages = {
                 'en': 'https://cdn.datatables.net/plug-ins/1.10.19/i18n/English.json'
             };
@@ -231,12 +267,12 @@
                     {
                         className: 'btn btn-light-danger px-6 font-weight-bold',
                         text: 'Delete All',
-                        url: "{{ route('admin.prices.massDestroy') }}",
-                        action: function (e, dt, node, config) {
+                        url: "{{ route('admin.shops.massDestroy') }}",
+                        action: function(e, dt, node, config) {
 
                             var ids = $.map(dt.rows({
                                 selected: true
-                            }).nodes(), function (entry) {
+                            }).nodes(), function(entry) {
                                 return $(entry).data('entry-id')
                             });
 
@@ -261,15 +297,15 @@
                                         }
                                     })
                                     $.ajax({
-                                        // headers: {'x-csrf-token': _token},
-                                        method: 'POST',
-                                        url: config.url,
-                                        data: {
-                                            ids: ids,
-                                            _method: 'POST'
-                                        }
-                                    })
-                                        .done(function () {
+                                            // headers: {'x-csrf-token': _token},
+                                            method: 'POST',
+                                            url: config.url,
+                                            data: {
+                                                ids: ids,
+                                                _method: 'POST'
+                                            }
+                                        })
+                                        .done(function() {
                                             location.reload()
                                         })
                                     Swal.fire('Saved!', '', 'success')
@@ -287,7 +323,7 @@
 
     <script>
         $(function () {
-            $('.status-class').change(function () {
+            $('.status-class').change(function() {
                 console.log("success");
                 var status = $(this).prop('checked') == true ? 1 : 0;
                 var cat_id = $(this).data('id');
@@ -295,12 +331,12 @@
                 $.ajax({
                     type: "GET",
                     dataType: "json",
-                    url: '{{ route('admin.prices.changeStatus') }}',
+                    url: '{{ route('admin.shops.changeStatus') }}',
                     data: {
                         'status': status,
                         'cat_id': cat_id
                     },
-                    success: function (data) {
+                    success: function(data) {
                         Swal.fire({
                             title: 'Status Change Successfully',
                             showClass: {
@@ -315,5 +351,6 @@
             })
         });
     </script>
+
 
 @endsection

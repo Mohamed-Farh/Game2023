@@ -6,7 +6,7 @@ use App\Models\GamePlayer;
 use App\Models\Price;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PriceResource extends JsonResource
+class ShopResource extends JsonResource
 {
 
     /**
@@ -17,22 +17,22 @@ class PriceResource extends JsonResource
      */
     public function toArray($request)
     {
+        if($this->free == 1){
+            $default_image =  env('APP_URL').'images/icon/free_gift.png';
+        }else{
+            $default_image =  env('APP_URL').'images/icon/gift.png';
+        }
+
         return [
+
             "id" => $this->id ?? '',
             "name" => $this->name ?? '',
-            "description" => $this->description ?? '',
             "code" => $this->code ?? '',
-            "value" => $this->value ?? '',
             "win_tokens" => $this->win_tokens ?? '',
-            "image" => isset($this->image) ? env('APP_URL').$this->image : env('APP_URL').'images/app_image.png',
-            "start" => $this->start_time,
-            "end" => $this->end_time,
-            //****Game
-            "game_id" => $this->game_id ?? '',
-            "game_type" => $this->game_type ?? '',
-
+            "cost" => $this->cost ?? '',
+            "image" => isset($this->image) ? env('APP_URL').$this->image : $default_image,
             "active" => (boolean) $this->active,
-            "basic" => (boolean) $this->basic,
+            "free" => (boolean) $this->free,
             "created_at" => $this->created_at ?? '',
             "updated_at" => $this->updated_at ?? '',
 

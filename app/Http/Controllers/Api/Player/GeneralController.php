@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Player;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\PriceDetailsRequest;
+use App\Http\Requests\Api\ShopDetailsRequest;
 use App\Http\Resources\AppStartPageResource;
 use App\Http\Resources\EmailResource;
 use App\Http\Resources\InformationResource;
@@ -11,6 +12,7 @@ use App\Http\Resources\NotificationResource;
 use App\Http\Resources\PhoneResource;
 use App\Http\Resources\PlayerPriceResource;
 use App\Http\Resources\PriceResource;
+use App\Http\Resources\ShopResource;
 use App\Http\Resources\SocialMediaResource;
 use App\Http\Resources\UnitResource;
 use App\Models\AppStartPage;
@@ -21,6 +23,7 @@ use App\Models\Notification;
 use App\Models\Phone;
 use App\Models\PlayerPrice;
 use App\Models\Price;
+use App\Models\Shop;
 use App\Models\SocialMedia;
 use App\Models\Unit;
 use App\Models\UserAddress;
@@ -136,5 +139,17 @@ class GeneralController extends Controller
             'read_at' => now(),
         ]);
         return $this->returnSuccessMessage('تم تغيير حالة الإشعار الي مقروء');
+    }
+
+
+    public function shops(Request $request)
+    {
+        $shops = Shop::get();
+        return $this->successMessage(ShopResource::collection($shops), 'جميع العروض');
+    }
+    public function shopDetails(ShopDetailsRequest $request)
+    {
+        $shop = Shop::whereId($request->id)->first();
+        return $this->successMessage(new ShopResource($shop), 'بيانات العرض');
     }
 }

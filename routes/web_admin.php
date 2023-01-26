@@ -19,6 +19,7 @@ use App\Http\Controllers\Backend\LocationController;
 use App\Http\Controllers\Backend\LogoController;
 use App\Http\Controllers\Backend\PageTitleController;
 use App\Http\Controllers\Backend\PhoneController;
+use App\Http\Controllers\Backend\ShopController;
 use App\Http\Controllers\Backend\SocialMediaController;
 use App\Http\Controllers\Backend\StateController;
 use App\Http\Controllers\Backend\UserController;
@@ -139,7 +140,11 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.' ], function(){
             Route::resource('lose-number-games-prices', LoseNumberGamePriceController::class);
 
             /*-------------------------------- */
-
+            /*  shops   */
+            Route::resource('shops'    ,ShopController::class);
+            Route::get('shops-changeStatus', [ShopController::class,'changeStatus'])->name('shops.changeStatus');
+            Route::post('shops-destroyAll', [ShopController::class,'massDestroy'])->name('shops.massDestroy');
+            Route::post('shops-removeImage', [ShopController::class,'removeImage'])->name('shops.removeImage');
 
             /*-------------------------------- */
             /*-------------------------------- */

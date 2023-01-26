@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Player\CategoryController;
 use App\Http\Controllers\Api\Player\GeneralController;
 use App\Http\Controllers\Api\Player\HundredGameApiController;
 use App\Http\Controllers\Api\Player\InvoiceController;
+use App\Http\Controllers\Api\Player\NineGameApiController;
 use App\Http\Controllers\Api\Player\OrderController;
 use App\Http\Controllers\Api\Player\ProductController;
 use App\Http\Controllers\Api\Player\ProductReviewController;
@@ -60,6 +61,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/price-details', [GeneralController::class, 'priceDetails']);
         Route::get('/my-notifications', [GeneralController::class, 'myNotifications']);
         Route::get('/read-notification', [GeneralController::class, 'readNotification']);
+        Route::get('/shops', [GeneralController::class, 'shops']);
+        Route::get('/shop-details', [GeneralController::class, 'shopDetails']);
     });
 
 
@@ -67,9 +70,20 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::group(['prefix' => 'hundred-game', 'as'=>'hundred-game.' ], function(){
         Route::get('/current-price', [HundredGameApiController::class, 'currentPrice']);
         Route::get('/current-hundred-game', [HundredGameApiController::class, 'currentHundredGame']);
+        Route::get('/hundred-game-details', [HundredGameApiController::class, 'hundredGameDetails']);
         Route::post('/start-hundred-game', [HundredGameApiController::class, 'startHundredGame']);
         Route::post('/play-hundred-game', [HundredGameApiController::class, 'playHundredGame']);
         Route::post('/get-voting', [HundredGameApiController::class, 'getVoting']);
+    });
+
+    /*  Nine Game */
+    Route::group(['prefix' => 'nine-game', 'as'=>'nine-game.' ], function(){
+        Route::get('/current-price', [NineGameApiController::class, 'currentPrice']);
+        Route::get('/current-nine-game', [NineGameApiController::class, 'currentNineGame']);
+        Route::get('/nine-game-details', [NineGameApiController::class, 'nineGameDetails']);
+        Route::post('/start-nine-game', [NineGameApiController::class, 'startNineGame']);
+        Route::post('/play-nine-game', [NineGameApiController::class, 'playNineGame']);
+        Route::post('/get-voting', [NineGameApiController::class, 'getVoting']);
     });
 });
 

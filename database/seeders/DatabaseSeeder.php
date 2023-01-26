@@ -37,5 +37,8 @@ class DatabaseSeeder extends Seeder
         $this->call(NineGameSeeder::class);
         $this->call(LoseNumberGameSeeder::class);
 
+
+        $this->call(ShopSeeder::class);
+
     }
 }

@@ -238,7 +238,15 @@ class EntrustSeeder extends Seeder
 ////        #####
 ////        $CanclledOrders     = Permission::create([ 'name' => 'show_cancelled_orders',    'display_name' => 'الطلبات الملغاة',        'route' => 'orders.cancelled',      'module' => 'orders',     'as' => 'orders.cancelled',   'icon' => 'fas fa-window-close',        'parent' => $manageOrders->id, 'parent_show' => $manageOrders->id, 'parent_original' => $manageOrders->id,'sidebar_link' => '1', 'appear' => '1', ]);
 
-
+        //Shop
+        $manageShop = Permission::create([ 'name' => 'manage_shop', 'display_name' => 'المتجر', 'route' => 'shops.index', 'module' => 'shops', 'as' => 'shops.index', 'icon' => 'fas fa-gift text-blue', 'parent' => '0', 'parent_original' => '0','sidebar_link' => '1', 'appear' => '1', 'ordering' => '40', ]);
+        $manageShop->parent_show = $manageShop->id;
+        $manageShop->save();
+        $showShop    = Permission::create([ 'name' => 'show_shop',          'display_name' => 'العروض',       'route' => 'shops.index',          'module' => 'shops', 'as' => 'shops.index',       'icon' => 'fas fa-gift',         'parent' => $manageShop->id, 'parent_show' => $manageShop->id, 'parent_original' => $manageShop->id,'sidebar_link' => '1', 'appear' => '1', ]);
+        $createShop  = Permission::create([ 'name' => 'create_shop',        'display_name' => 'انشاء عرض',     'route' => 'shops.create',         'module' => 'shops', 'as' => 'shops.create',      'icon' => null,                  'parent' => $manageShop->id, 'parent_show' => $manageShop->id, 'parent_original' => $manageShop->id,'sidebar_link' => '1', 'appear' => '0', ]);
+        $updateShop  = Permission::create([ 'name' => 'update_shop',        'display_name' => 'تعديل عرض',     'route' => 'shops.edit',           'module' => 'shops', 'as' => 'shops.edit',        'icon' => null,                  'parent' => $manageShop->id, 'parent_show' => $manageShop->id, 'parent_original' => $manageShop->id,'sidebar_link' => '1', 'appear' => '0', ]);
+        $destroyShop = Permission::create([ 'name' => 'delete_shop',        'display_name' => 'حذف عرض',       'route' => 'shops.destroy',        'module' => 'shops', 'as' => 'shops.destroy',     'icon' => null,                  'parent' => $manageShop->id, 'parent_show' => $manageShop->id, 'parent_original' => $manageShop->id,'sidebar_link' => '1', 'appear' => '0', ]);
+        #####
 
 
         //Countries

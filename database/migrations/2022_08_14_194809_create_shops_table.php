@@ -16,13 +16,15 @@ class CreateShopsTable extends Migration
         Schema::create('shops', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->text('description')->nullable();
+//            $table->text('description')->nullable();
             $table->string('code')->nullable();
-            $table->decimal('value', 20, 2)->nullable();
+            $table->string('win_tokens')->default(0);
+            $table->decimal('cost', 20, 2)->nullable();
             $table->timestamp('start_time')->nullable();
             $table->timestamp('end_time')->nullable();
-//            $table->string('image')->nullable();
+            $table->string('image')->nullable();
             $table->boolean('active')->default(1);
+            $table->boolean('free')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });
