@@ -18,6 +18,7 @@ class NineGameResource extends JsonResource
         return [
             "id" => $this->id,
             "no_of_win_numbers" => $this->no_of_win_numbers,
+            "win_numbers" => $this->win_numbers,
             "timer" => $this->timer ?? '',
             "start" => $this->start,
             "end" => $this->end,
