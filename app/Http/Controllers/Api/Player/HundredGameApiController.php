@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Player;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\HundredGameDetailsRequest;
-use App\Http\Requests\Api\StartHundredGameRequest;
 use App\Http\Resources\HundredGameDetailsResource;
 use App\Http\Resources\HundredGameResource;
 use App\Http\Resources\PriceResource;
@@ -13,7 +12,6 @@ use App\Models\GameVote;
 use App\Models\HundredGame;
 use App\Models\PlayerPrice;
 use App\Traits\GeneralTrait;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
@@ -169,7 +167,7 @@ class HundredGameApiController extends Controller
                                 'price_id' => $currentPrice->id,
                             ]);
 
-                            return $this->returnSuccessMessage('Congratulation, You Win The Game');
+                            return $this->SuccessMessage(1,'Congratulation, You Win The Game');
 
                         } else {
                             $playGameBefore->update([
@@ -178,11 +176,11 @@ class HundredGameApiController extends Controller
                                 'play' => 1,
                                 'win' => 0
                             ]);
-                            return $this->returnSuccessMessage('You Lose The Game, Good Luck Next Time');
+                            return $this->SuccessMessage(0,'You Lose The Game, Good Luck Next Time');
                         }
 
                     }elseif( ($currentHundredGame->no_of_win_numbers) < count($request->numbers)){
-                        return $this->returnErrorMessage('لقد قمت بإدخال عدد من الارقام أكبر من المطلوب', '422');
+                        return $this->returnErrorMessage('You have entered a number of digits larger than required', '422');
 
                     }else{
                         /** يتم ادخال الارقام و جلب العمليات السابقة لهذا اللاعب لإلغاء اختيار الارقام الخاطئة مرة أخري */
@@ -237,10 +235,10 @@ class HundredGameApiController extends Controller
                         'play' => 1,
                         'win' => 0
                     ]);
-                    return $this->returnSuccessMessage('You took a long time, You lost the game, Good luck next time');
+                    return $this->SuccessMessage(0,'You took a long time, You lost the game, Good luck next time');
                 }
             }else{
-                return $this->returnSuccessMessage('You Must Start Game First, Before Choosing Numbers');
+                return $this->returnErrorMessage('You Must Start Game First, Before Choosing Numbers');
             }
 
         }elseif($winGameBefore){
@@ -270,7 +268,7 @@ class HundredGameApiController extends Controller
                 }
 
             }else{
-                return $this->returnSuccessMessage('You Must Start Game First, Before Choosing Numbers');
+                return $this->returnErrorMessage('You Must Start Game First, Before Choosing Numbers', '422');
             }
         }
     }

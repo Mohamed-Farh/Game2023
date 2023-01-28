@@ -17,7 +17,7 @@ class CreateGameVotesTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('game_id');
-            $table->enum('game_type', ['hundred', 'nine', 'one']);
+            $table->enum('game_type', ['hundred', 'nine', 'loseNumber']);
             $table->foreignId('price_id')->constrained()->cascadeOnDelete();
             $table->string('numbers')->nullable();
             $table->boolean('vote')->default(0);

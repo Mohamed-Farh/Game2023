@@ -51,7 +51,7 @@ class AuthController extends Controller
             /*** Start Notification ****/
             Carbon::setLocale('ar');
             $player->notification()->create([
-                'type'              => "تسجيل دخول",
+                'type'              => "Login",
                 'notifiable_type'   => "User",
                 'notifiable_id'     => $player->id,
                 'content'           => 'لقد تم تسجيل الدخول الي حسابك في يوم '. Carbon::parse(now())->translatedFormat('l j F Y H:i:s'),
@@ -143,7 +143,7 @@ class AuthController extends Controller
                 /*** Start Notification ****/
                 Carbon::setLocale('ar');
                 $player->notification()->create([
-                    'type'              => "إنشاء حساب جديد",
+                    'type'              => "New Account",
                     'notifiable_type'   => "User",
                     'notifiable_id'     => $player->id,
                     'content'           => 'تهانينا, لقد تم إنشاء حساب جديد بنجاح',

@@ -34,10 +34,23 @@ class LoseNumberGame extends Model
             ->where('basic', 1)->first();
     }
 
-    public function scopeCurrentHundredGame()
+
+    //***************************************************************
+
+    public function scopeCurrentLoseNumberGame()
     {
         return $this->where('start', '<=', Carbon::now())
             ->where('end', '>=', Carbon::now())
             ->where('active', 1);
+    }
+
+    public function currentPrice()
+    {
+        return $this->hasMany(Price::class,'game_id')
+            ->where('game_type', 'loseNumber')
+            ->where('start_time', '<=', Carbon::now())
+            ->where('end_time', '>=', Carbon::now())
+            ->where('active', 1)
+            ->first();
     }
 }

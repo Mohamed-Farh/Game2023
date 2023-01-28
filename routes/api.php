@@ -5,12 +5,14 @@ use App\Http\Controllers\Api\Player\CategoryController;
 use App\Http\Controllers\Api\Player\GeneralController;
 use App\Http\Controllers\Api\Player\HundredGameApiController;
 use App\Http\Controllers\Api\Player\InvoiceController;
+use App\Http\Controllers\Api\Player\LoseNumberGameApiController;
 use App\Http\Controllers\Api\Player\NineGameApiController;
 use App\Http\Controllers\Api\Player\OrderController;
 use App\Http\Controllers\Api\Player\ProductController;
 use App\Http\Controllers\Api\Player\ProductReviewController;
 use App\Http\Controllers\Api\Player\ProductUnitController;
 use App\Http\Controllers\Api\Player\AuthController;
+use App\Http\Controllers\Api\Player\ProfileController;
 use App\Http\Controllers\Api\Player\WishListController;
 use Illuminate\Support\Facades\Route;
 
@@ -84,6 +86,24 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/start-nine-game', [NineGameApiController::class, 'startNineGame']);
         Route::post('/play-nine-game', [NineGameApiController::class, 'playNineGame']);
         Route::post('/get-voting', [NineGameApiController::class, 'getVoting']);
+    });
+
+    /*  LoseNumber Game */
+    Route::group(['prefix' => 'lose-number-game', 'as'=>'lose-number-game.' ], function(){
+        Route::get('/current-price', [LoseNumberGameApiController::class, 'currentPrice']);
+        Route::get('/current-lose-number-game', [LoseNumberGameApiController::class, 'currentLoseNumberGame']);
+        Route::get('/lose-number-game-details', [LoseNumberGameApiController::class, 'loseNumberGameDetails']);
+        Route::post('/start-lose-number-game', [LoseNumberGameApiController::class, 'startLoseNumberGame']);
+        Route::post('/play-lose-number-game', [LoseNumberGameApiController::class, 'playLoseNumberGame']);
+        Route::post('/get-voting', [LoseNumberGameApiController::class, 'getVoting']);
+    });
+
+
+    /*  LoseNumber Game */
+    Route::group(['prefix' => 'profile', 'as'=>'profile.' ], function(){
+        Route::get('/my-latest-price', [ProfileController::class, 'myLatestPrice']);
+        Route::get('/my-prices-table', [ProfileController::class, 'myPricesTable']);
+        Route::post('/update-profile', [ProfileController::class, 'updateProfile']);
     });
 });
 

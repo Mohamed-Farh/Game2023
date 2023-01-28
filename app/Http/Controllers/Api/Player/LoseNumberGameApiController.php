@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Api\Player;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\StartHundredGameRequest;
-use App\Http\Resources\HundredGameResource;
+use App\Http\Requests\Api\LoseNumberGameDetailsRequest;
+use App\Http\Resources\LoseNumberGameDetailsResource;
+use App\Http\Resources\LoseNumberGameResource;
 use App\Http\Resources\PriceResource;
 use App\Models\GamePlayer;
 use App\Models\GameVote;
-use App\Models\HundredGame;
+use App\Models\LoseNumberGame;
 use App\Models\PlayerPrice;
+use App\Models\User;
 use App\Traits\GeneralTrait;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
@@ -19,218 +20,195 @@ class LoseNumberGameApiController extends Controller
 {
     use GeneralTrait;
 
+
     public function currentLoseNumberGame(Request $request)
     {
-    //        $hundred =  HundredGame::where('start', '<=', Carbon::now())
-    //                                ->where('end', '>=', Carbon::now())
-    //                                ->where('active', 1)
-    //                                ->first();
-        $hundred = HundredGame::currentHundredGame()->first();
-        return $this->successMessage(new HundredGameResource($hundred), 'اللعبة المتاحة حاليا');
+        $loseNumber = LoseNumberGame::currentLoseNumberGame()->first();
+        return $this->successMessage(new LoseNumberGameResource($loseNumber), 'Available Lose Number Game');
+    }
+
+    public function loseNumberGameDetails(LoseNumberGameDetailsRequest $request)
+    {
+        $loseNumber = LoseNumberGame::whereId($request->id)->first();
+        return $this->successMessage(new LoseNumberGameDetailsResource($loseNumber), 'Lose Number Game Details');
     }
 
     public function currentPrice(Request $request)
     {
-        $currentHundredGame = HundredGame::currentHundredGame()->first();
-        $currentPrice = $currentHundredGame->currentPrice() ?? $currentHundredGame->basicPrice();
-        return $this->successMessage(new PriceResource($currentPrice), 'الجائزة المتاحة حاليا');
+        $currentLoseNumberGame = LoseNumberGame::currentLoseNumberGame()->first();
+        $currentPrice = $currentLoseNumberGame->currentPrice() ?? $currentLoseNumberGame->basicPrice();
+        return $this->successMessage(new PriceResource($currentPrice), 'Available Price');
     }
 
-    public function startHundredGame(StartHundredGameRequest $request)
+    public function startLoseNumberGame(Request $request)
     {
-        //Current Game & Price
-        $currentHundredGame = HundredGame::currentHundredGame()->first();
-        $currentPrice = $currentHundredGame->currentPrice();
+        /** Current Game & Price **/
+        $currentLoseNumberGame = LoseNumberGame::currentLoseNumberGame()->first();
+        $currentPrice = $currentLoseNumberGame->currentPrice();
 
-
-        //Check If Player Win This Game Before
+        /** Check If Player Win This Game Before **/
         $winGameBefore = GamePlayer::where('user_id', \auth()->id())
-            ->where('game_id', $currentHundredGame->id)
-            ->where('game_type', 'hundred')
-//            ->where('numbers', $currentHundredGame->win_numbers )
+            ->where('game_id', $currentLoseNumberGame->id)
+            ->where('game_type', 'loseNumber')
             ->where('win', 1)
             ->first();
 
         if(!$winGameBefore){
+            /** Check If Game Started Before Or Not ? **/
             $openGameBefore = GamePlayer::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentLoseNumberGame->id)
+                ->where('game_type', 'loseNumber')
                 ->where('numbers', null)
                 ->where('timer', '00:00:00')
                 ->where('play', 0)
                 ->first();
+
             if(!$openGameBefore){
                 //Start As Player
-                GamePlayer::create([
+                $openGameNow = GamePlayer::create([
                     'user_id' => \auth()->id(),
-                    'game_id' => $currentHundredGame->id,
-                    'game_type' => 'hundred',
+                    'game_id' => $currentLoseNumberGame->id,
+                    'game_type' => 'loseNumber',
                     'price_id' => $currentPrice->id,
                     'timer' => '00:00:00',
                     'numbers' => null,
                 ]);
+                $data = [ 'started_game_id' => $openGameNow->id ];
+                return $this->successMessage($data,'The Game Started Successfully');
+            }else{
+                $data = [ 'started_game_id' => $openGameBefore->id ];
+                return $this->successMessage($data, 'You Have Already Started This Game Before');
             }
-            return $this->returnSuccessMessage('تم بدأ اللعبة بنجاح');
 
         }elseif($winGameBefore){
             //Start As Vote
             $openVoteBefore = GameVote::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentLoseNumberGame->id)
+                ->where('game_type', 'loseNumber')
                 ->where('numbers', null)
                 ->where('price_id', $currentPrice->id)
                 ->where('vote', 0)
                 ->first();
             if(!$openVoteBefore){
-                $game = GameVote::create([
+                $openVottingNow = GameVote::create([
                     'user_id' => \auth()->id(),
-                    'game_id' => $currentHundredGame->id,
-                    'game_type' => 'hundred',
+                    'game_id' => $currentLoseNumberGame->id,
+                    'game_type' => 'loseNumber',
                     'price_id' => $currentPrice->id,
                     'numbers' => null,
                 ]);
+                $data = [ 'voting_game_id' => $openVottingNow->id ];
+                return $this->successMessage($data,'The Voting Started Successfully');
+            }else{
+                $data = [ 'voting_game_id' => $openVoteBefore->id ];
+                return $this->successMessage($data, 'You Have Already Started This Voting Before');
             }
-            return $this->returnSuccessMessage('تم بدأ اضافة رأي بنجاح');
         }
     }
 
 
-    public function playHundredGame(Request $request)
+    public function playLoseNumberGame(Request $request)
     {
 
-        //**** جلب اللعبة الحالية و الجائزة الحالية
-        $currentHundredGame = HundredGame::currentHundredGame()->first();
-        $currentPrice = $currentHundredGame->currentPrice();
+        /** جلب اللعبة الحالية و الجائزة الحالية */
+        $currentLoseNumberGame = LoseNumberGame::currentLoseNumberGame()->first();
+        $currentPrice = $currentLoseNumberGame->currentPrice();
 
-        //**** هل هذا اللاعب قام بالفوز بهذة اللعبة من قبل
+        /** هل هذا اللاعب قام بالفوز بهذة اللعبة من قبل */
         $winGameBefore = GamePlayer::where('user_id', \auth()->id())
-            ->where('game_id', $currentHundredGame->id)
-            ->where('game_type', 'hundred')
-//            ->where('numbers', $currentHundredGame->win_numbers)
+            ->where('game_id', $currentLoseNumberGame->id)
+            ->where('game_type', 'loseNumber')
             ->where('win', 1)
             ->first();
 
         $request_numbers = $request->numbers;
-        $request_numbers = array_map(function($arr) {
+        $request_numbers = array_map(function ($arr) {
             return intval($arr);
         }, $request_numbers);
 
-        //**** لو لم يكسب من قبل هذه اللعبة, يتم تسجيله كلاعب في هذة الجولة
-        if(!$winGameBefore){
+        /** لو لم يكسب من قبل هذه اللعبة, يتم تسجيله كلاعب في هذة الجولة */
+        if (!$winGameBefore) {
             $playGameBefore = GamePlayer::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
-//                ->where('numbers', null)
+                ->where('game_id', $currentLoseNumberGame->id)
+                ->where('game_type', 'loseNumber')
                 ->where('active', 1)
                 ->where('play', 0)
                 ->where('win', 0)
                 ->first();
 
-            //**** هل قام اللاعب بالبدء باللعبة اولا قبل عملية اختيار الارقام
-            if($playGameBefore)
-            {
+            /** هل قام اللاعب بالبدء باللعبة اولا قبل عملية اختيار الارقام */
+            if ($playGameBefore) {
                 $this->validate($request, [
                     'numbers' => 'required',
-                     'timer' => 'required',
+                    'timer' => 'required',
                 ]);
 
-                //**** هل قام اللاعب بالبدء باللعبة و اختيار الارقام و لم يتعد الوقت المسموح له في اللعب
-                if( ($currentHundredGame->timer) >= ($request->timer) )
-                {
-                    //**** هل عدد الارقام المدخلة اصبح يساوي العدد المطلوب من الارقام للفوز باللعبة
-                    if( ($currentHundredGame->no_of_win_numbers) == count($request->numbers)) {
-                        //**** check if win or lose
+                /** هل قام اللاعب بالبدء باللعبة و اختيار الارقام و لم يتعدى الوقت المسموح له في اللعب */
+                if (($currentLoseNumberGame->timer) >= ($request->timer)) {
+                    /** هل الرقم الخاسر من ضمن الارقام */
+                    if (!in_array($currentLoseNumberGame->lose_number, $request->numbers)) {
 
-                        if (($currentHundredGame->win_numbers) === $request_numbers) {
+                        /** هل عدد الارقام المدخلة اصبح يساوي العدد المطلوب من الارقام للفوز باللعبة */
+                        if (count($request->numbers) == 8) {
                             $playGameBefore->update([
                                 'numbers' => $request_numbers,
                                 'timer' => $request->timer,
                                 'play' => 1,
                                 'win' => 1
                             ]);
-
+                            /** ربط اللاعب باللعبة التي فاز بها */
                             PlayerPrice::create([
                                 'user_id' => \auth()->id(),
                                 'game_player_id' => $playGameBefore->id,
                                 'price_id' => $currentPrice->id,
                             ]);
+                            /** زيادة التوكن للاعب الفائز */
+                            if ($currentPrice->win_tokens != null || $currentPrice->win_tokens != 0) {
+                                $updatedPlayer = User::whereId(\auth()->id())->first();
+                                $updatedPlayer->update(['token_amount' => $updatedPlayer->token_amount + $currentPrice->win_tokens]);
+                            }
+                            return $this->successMessage(1,'Congratulation, You Win The Game');
 
-                            return $this->returnSuccessMessage('مبروك , لقد فزت باللعبة');
+                        } elseif (count($request->numbers) > 8) {
+                            /** لقد قمت بادخال اكثر من 8 ارقام */
+                            return $this->returnErrorMessage('Sorry, You entered more than 8 numbers', '422');
 
                         } else {
-                            $playGameBefore->update([
-                                'numbers' => $request_numbers,
-                                'timer' => $request->timer,
-                                'play' => 1,
-                                'win' => 0
-                            ]);
-                            return $this->returnSuccessMessage('حظ سعيد المرة القادمة , لقد خسرت باللعبة');
-                        }
-
-                    }elseif( ($currentHundredGame->no_of_win_numbers) < count($request->numbers)){
-                        return $this->returnErrorMessage('لقد قمت بإدخال عدد من الارقام أكبر من المطلوب', '422');
-
-                    }else{
-                        //**** يتم ادخال الارقام و جلب العمليات السابقة لهذا اللاعب لإلغاء اختيار الارقام الخاطئة مرة أخري
-                        $previousPlayerNumbers = GamePlayer::where('user_id', \auth()->id())
-                            ->where('game_id', $currentHundredGame->id)
-                            ->where('game_type', 'hundred')
-                            ->where('numbers', '!=', null)
-                            ->where('active', 1)
-                            ->where('play', 1)
-                            ->where('win', 0)
-                            ->pluck('numbers')->toArray();
-
-                        //****** هل هناك محاولات سابقة للعب في هذة اللعبة
-                        if($previousPlayerNumbers){
-
-                            $samePreviousNumbers = [];
-                            $disabledPreviousNumbers = [];
-                            foreach ($previousPlayerNumbers as $previousPlayerNumber){
-                                //TODO:******* جلب الترتيب الصحيح
-                                $keys = array_keys($previousPlayerNumber, $request_numbers[array_keys($request_numbers)[0]]);
-                                foreach($keys as $key) {
-                                    if(array_slice($previousPlayerNumber, $key, count($request_numbers)) == $request_numbers){
-                                        if( !in_array($previousPlayerNumber,$samePreviousNumbers))
-                                            array_push($samePreviousNumbers, $previousPlayerNumber);
-
-                                        $key_for_next_number =count($request_numbers);
-                                        if( isset($previousPlayerNumber[$key_for_next_number]) && !in_array($previousPlayerNumber[$key_for_next_number],$disabledPreviousNumbers))
-                                            array_push($disabledPreviousNumbers, $previousPlayerNumber[$key_for_next_number]);
-                                    }
-                                }
-                                //TODO:*******
-                            }
-                            $data = [
-                                 'disabled_previous_choosen_numbers' =>  $disabledPreviousNumbers,
-                            ];
-                            return $this->successMessage($data, 'الارقام الخاطئة التي اختارها اللاعب سابقا');
-                        }else{
-                            //****** هذة اول محاولة للعب في هذة اللعبة
+                            /** لقد قمت بادخال أقل من 8 ارقام */
                             $playGameBefore->update([
                                 'numbers' => $request_numbers,
                             ]);
-                            return $this->returnSuccessMessage('استمر في اختيار الارقام حتي تصل للحد المطلوب');
+                            return $this->successMessage(2,'Good job, move on, You close to winning');
                         }
+                    } else {
+                        $playGameBefore->update([
+                            'numbers' => $request_numbers,
+                            'timer' => $request->timer,
+                            'play' => 1,
+                            'win' => 0
+                        ]);
+                        return $this->successMessage(0, 'You Lose The Game, Good Luck Next Time');
                     }
-                }elseif( ($currentHundredGame->timer) < ($request->timer) ){
+                } elseif (($currentLoseNumberGame->timer) < ($request->timer)) {
                     $playGameBefore->update([
                         'numbers' => null,
                         'timer' => $request->timer,
                         'play' => 1,
                         'win' => 0
                     ]);
-                    return $this->returnSuccessMessage('لقد اخذت وقت طويل , حظ سعيد المرة القادمة , لقد خسرت باللعبة');
+                    return $this->successMessage( 0,'You took a long time, You lost the game, Good luck next time');
                 }
+
             }else{
-                return $this->returnSuccessMessage('يرجي البدء باللعبة أولا قبل اختيار الارقام');
+                return $this->returnErrorMessage('You Must Start Game First, Before Choosing Numbers', '422');
             }
 
+
         }elseif($winGameBefore){
-            //**** لو كسب من قبل هذه اللعبة, يتم تسجيله كرأي جَمهور في هذة الجولة
+            /**  لو كسب من قبل هذه اللعبة, يتم تسجيله كرأي جَمهور في هذة الجولة */
             $voteGameBefore = GameVote::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentLoseNumberGame->id)
+                ->where('game_type', 'loseNumber')
                 ->where('vote', 0)
                 ->where('active', 1)
                 ->first();
@@ -241,19 +219,37 @@ class LoseNumberGameApiController extends Controller
                     'numbers' => 'required',
                 ]);
 
-                if( ($currentHundredGame->no_of_win_numbers) == count($request->numbers))
-                {
+                /** هل الرقم الخاسر من ضمن الارقام */
+                if (!in_array($currentLoseNumberGame->lose_number, $request->numbers)) {
+                    /** هل عدد الارقام المدخلة اصبح يساوي العدد المطلوب من الارقام للفوز باللعبة */
+                    if (count($request->numbers) == 8) {
+                        $voteGameBefore->update([
+                            'numbers' => $request_numbers,
+                            'vote' => 1
+                        ]);
+                        return $this->successMessage(1, 'Your Voting Added Successfully');
+
+                    } elseif (count($request->numbers) > 8) {
+                        /** لقد قمت بادخال اكثر من 8 ارقام */
+                        return $this->returnErrorMessage('Sorry, You entered more than 8 numbers', '422');
+
+                    } else {
+                        /** لقد قمت بادخال أقل من 8 ارقام */
+                        $voteGameBefore->update([
+                            'numbers' => $request_numbers,
+                        ]);
+                        return $this->successMessage(2,'Good job, move on, You close to winning');
+                    }
+                } else {
                     $voteGameBefore->update([
                         'numbers' => $request_numbers,
                         'vote' => 1
                     ]);
-                    return $this->returnSuccessMessage('تم اضافة رأيك بنجاح');
-                }else{
-                    return $this->returnErrorMessage('يرجي ادخال العدد الصحيح من الارقام', '422');
+                    return $this->successMessage(0,'You Lose The Game, Good Luck Next Time');
                 }
 
             }else{
-                return $this->returnSuccessMessage('يرجي ألبدء باللعبة أولا قبل اختيار الارقام');
+                return $this->returnErrorMessage('You Must Start Game First, Before Choosing Numbers', '422');
             }
         }
     }
@@ -261,48 +257,48 @@ class LoseNumberGameApiController extends Controller
     //
     public function getVoting(Request $request)
     {
-        //**** جلب اللعبة الحالية
-        $currentHundredGame = HundredGame::currentHundredGame()->first();
+        /**  جلب اللعبة الحالية */
+        $currentLoseNumberGame = LoseNumberGame::currentLoseNumberGame()->first();
 
-        //**** هل هذا اللاعب قام بالفوز بهذة اللعبة من قبل
+        /**  هل هذا اللاعب قام بالفوز بهذة اللعبة من قبل */
         $winGameBefore = GamePlayer::where('user_id', \auth()->id())
-            ->where('game_id', $currentHundredGame->id)
-            ->where('game_type', 'hundred')
+            ->where('game_id', $currentLoseNumberGame->id)
+            ->where('game_type', 'loseNumber')
             ->where('win', 1)
             ->first();
 
-        //**** لو لم يكسب من قبل هذه اللعبة, يتم تسجيله كلاعب في هذة الجولة
+        /** لو لم يكسب من قبل هذه اللعبة, يتم تسجيله كلاعب في هذة الجولة */
         if(!$winGameBefore){
             $playGameBefore = GamePlayer::where('user_id', \auth()->id())
-                ->where('game_id', $currentHundredGame->id)
-                ->where('game_type', 'hundred')
+                ->where('game_id', $currentLoseNumberGame->id)
+                ->where('game_type', 'loseNumber')
                 ->where('numbers', null)
                 ->where('active', 1)
                 ->where('play', 0)
                 ->where('win', 0)
                 ->first();
 
-            //**** هل قام اللاعب بالبدء باللعبة اولا قبل عملية اختيار الارقام
+            /** هل قام اللاعب بالبدء باللعبة اولا قبل عملية اختيار الارقام */
             if($playGameBefore)
             {
                 $this->validate($request, [
                     'numbers' => 'required',
                 ]);
 
-                //**** يتم ادخال الارقام و جلب العمليات السابقة لهذا اللاعب لإلغاء اختيار الارقام الخاطئة مرة أخري
+                /** يتم ادخال الارقام و جلب العمليات السابقة لهذا اللاعب لإلغاء اختيار الارقام الخاطئة مرة أخري */
                 $request_numbers = $request->numbers;
                 $request_numbers = array_map(function($arr) {
                     return intval($arr);
                 }, $request_numbers);
 
-                $previousPlayerVotesNumbers = GameVote::where('game_id', $currentHundredGame->id)
-                    ->where('game_type', 'hundred')
+                $previousPlayerVotesNumbers = GameVote::where('game_id', $currentLoseNumberGame->id)
+                    ->where('game_type', 'loseNumber')
                     ->where('numbers', '!=', null)
                     ->where('active', 1)
                     ->where('vote', 1)
                     ->pluck('numbers')->toArray();
 
-                //****** هل هناك آراء جمهور لهدة اللعبة
+                /** هل هناك آراء جمهور لهدة اللعبة */
                 if($previousPlayerVotesNumbers)
                 {
                     $samePreviousNumbers = [];
@@ -317,7 +313,7 @@ class LoseNumberGameApiController extends Controller
 
                                 $key_for_next_number =count($request_numbers);
 //                                if( isset($previousPlayerVotesNumber[$key_for_next_number]) && !in_array($previousPlayerVotesNumber[$key_for_next_number],$playersVoteNumbers))
-                                    array_push($playersVoteNumbers, $previousPlayerVotesNumber[$key_for_next_number]);
+                                array_push($playersVoteNumbers, $previousPlayerVotesNumber[$key_for_next_number]);
                             }
                         }
                         //TODO:*******
@@ -330,19 +326,18 @@ class LoseNumberGameApiController extends Controller
                         'expected_numbers' =>  $result,
                     ];
 
-                    return $this->successMessage($data, 'الارقام المتوقعة');
+                    return $this->successMessage($data, 'Public Opinion');
                 }else{
-                    return $this->returnSuccessMessage('لا يوجد آراء جمهور لهدة اللعبة');
+                    return $this->returnSuccessMessage('Public Opinion has not yet been added to this game');
                 }
             }else{
-                return $this->returnSuccessMessage('يرجي البدء باللعبة أولا قبل اختيار الارقام');
+                return $this->returnErrorMessage('You Must Start Game First, Before Choosing Numbers', '422');
             }
 
         }elseif($winGameBefore){
             //**** لو كسب من قبل هذه اللعبة, يتم تسجيله كرأي جَمهور
-            return $this->returnSuccessMessage('لا يمكن عرض الجمهور لأنك بالفعل واحد من الجمهور');
+            return $this->returnSuccessMessage('Public Opinion cannot be shown because you are already one of them');
         }
     }
-
 
 }

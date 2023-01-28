@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\Player;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\NineGameDetailsRequest;
-use App\Http\Requests\Api\StartNineGameRequest;
 use App\Http\Resources\NineGameDetailsResource;
 use App\Http\Resources\NineGameResource;
 use App\Http\Resources\PriceResource;
@@ -12,8 +11,8 @@ use App\Models\GamePlayer;
 use App\Models\GameVote;
 use App\Models\NineGame;
 use App\Models\PlayerPrice;
+use App\Models\User;
 use App\Traits\GeneralTrait;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
@@ -158,14 +157,18 @@ class NineGameApiController extends Controller
                                 'play' => 1,
                                 'win' => 1
                             ]);
-
+                            /** ربط اللاعب باللعبة التي فاز بها */
                             PlayerPrice::create([
                                 'user_id' => \auth()->id(),
                                 'game_player_id' => $playGameBefore->id,
                                 'price_id' => $currentPrice->id,
                             ]);
-
-                            return $this->returnSuccessMessage('Congratulation, You Win The Game');
+                            /** زيادة التوكن للاعب الفائز */
+                            if($currentPrice->win_tokens != null || $currentPrice->win_tokens != 0 ){
+                                $updatedPlayer = User::whereId(\auth()->id())->first();
+                                $updatedPlayer->update([ 'token_amount' => $updatedPlayer->token_amount + $currentPrice->win_tokens]);
+                            }
+                            return $this->SuccessMessage(1,'Congratulation, You Win The Game');
 
                         } else {
                             $playGameBefore->update([
@@ -174,11 +177,11 @@ class NineGameApiController extends Controller
                                 'play' => 1,
                                 'win' => 0
                             ]);
-                            return $this->returnSuccessMessage('You Lose The Game, Good Luck Next Time');
+                            return $this->SuccessMessage(0,'You Lose The Game, Good Luck Next Time');
                         }
 
                     }elseif( ($currentNineGame->no_of_win_numbers) < count($request->numbers)){
-                        return $this->returnErrorMessage('لقد قمت بإدخال عدد من الارقام أكبر من المطلوب', '422');
+                        return $this->returnErrorMessage('You have entered a number of digits larger than required', '422');
 
                     }else{
                         /** يتم ادخال الارقام و جلب العمليات السابقة لهذا اللاعب لإلغاء اختيار الارقام الخاطئة مرة أخري */
@@ -233,10 +236,10 @@ class NineGameApiController extends Controller
                         'play' => 1,
                         'win' => 0
                     ]);
-                    return $this->returnSuccessMessage('You took a long time, You lost the game, Good luck next time');
+                    return $this->returnErrorMessage('You took a long time, You lost the game, Good luck next time','422');
                 }
             }else{
-                return $this->returnSuccessMessage('You Must Start Game First, Before Choosing Numbers');
+                return $this->returnErrorMessage('You Must Start Game First, Before Choosing Numbers','422');
             }
 
         }elseif($winGameBefore){
@@ -266,7 +269,7 @@ class NineGameApiController extends Controller
                 }
 
             }else{
-                return $this->returnSuccessMessage('You Must Start Game First, Before Choosing Numbers');
+                return $this->returnErrorMessage('You Must Start Game First, Before Choosing Numbers','422');
             }
         }
     }
@@ -348,7 +351,7 @@ class NineGameApiController extends Controller
                     return $this->returnSuccessMessage('Public Opinion has not yet been added to this game');
                 }
             }else{
-                return $this->returnSuccessMessage('You Must Start Game First, Before Choosing Numbers');
+                return $this->returnErrorMessage('You Must Start Game First, Before Choosing Numbers', '422');
             }
 
         }elseif($winGameBefore){

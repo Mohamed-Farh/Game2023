@@ -2,10 +2,10 @@
 
 namespace App\Http\Resources;
 
-use App\Models\NineGame;
+use App\Models\LoseNumberGame;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class NineGameDetailsResource extends JsonResource
+class LoseNumberGameDetailsResource extends JsonResource
 {
 
     /**
@@ -16,13 +16,13 @@ class NineGameDetailsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $currentNineGame = NineGame::whereId($this->id)->first();
-        $currentPrice = $currentNineGame->currentPrice() ?? $currentNineGame->basicPrice();
+        $currentLoseNumberGame = LoseNumberGame::whereId($this->id)->first();
+        $currentPrice = $currentLoseNumberGame->currentPrice() ?? $currentLoseNumberGame->basicPrice();
 
 
         return [
             "id" => $this->id,
-            "no_of_win_numbers" => $this->no_of_win_numbers,
+            "lose_number" => $this->lose_number,
             "timer" => $this->timer ?? '',
             "start" => $this->start,
             "end" => $this->end,

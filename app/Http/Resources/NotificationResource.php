@@ -17,9 +17,17 @@ class NotificationResource extends JsonResource
      */
     public function toArray($request) : Array
     {
+        if($this->type == 'Login'){
+            $type_code = 0;
+        }elseif($this->type == 'Registration'){
+            $type_code = 1;
+        }
+
+
         return [
             "id" => $this->id ?? '',
             "type" => $this->type ?? '',
+            "type_code" => $type_code ?? '',
             "content" => $this->content ?? '',
             "icon" => isset($this->icon) ? env('APP_URL').$this->icon : env('APP_URL').'/images/icons/notification.png',
             "read_at" => $this->read_at ?? false,

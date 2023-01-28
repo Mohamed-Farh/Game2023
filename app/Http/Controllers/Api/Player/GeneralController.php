@@ -14,7 +14,6 @@ use App\Http\Resources\PlayerPriceResource;
 use App\Http\Resources\PriceResource;
 use App\Http\Resources\ShopResource;
 use App\Http\Resources\SocialMediaResource;
-use App\Http\Resources\UnitResource;
 use App\Models\AppStartPage;
 use App\Models\ContactMessage;
 use App\Models\Email;
@@ -25,7 +24,6 @@ use App\Models\PlayerPrice;
 use App\Models\Price;
 use App\Models\Shop;
 use App\Models\SocialMedia;
-use App\Models\Unit;
 use App\Models\UserAddress;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
@@ -98,7 +96,7 @@ class GeneralController extends Controller
             $input['message']          = $request->message;
             $input['status']          = '1';
             ContactMessage::create($input);
-            return $this->returnSuccessMessage('تم إرسال رسالتكم بنجاح');
+            return $this->returnSuccessMessage('Your message has been sent successfully');
 
         }catch (\Exception $e) {
             return $this->returnErrorMessage('Sorry! Please Try Again !', '422');
@@ -113,9 +111,9 @@ class GeneralController extends Controller
             ->whereActive(1)
             ->first();
         if($latest_price){
-            return $this->successMessage(new PlayerPriceResource($latest_price), 'أخر جائزة قمت بالفوز بها');
+            return $this->successMessage(new PlayerPriceResource($latest_price), 'The last Prise You Won');
         }else{
-            return $this->returnSuccessMessage('لم تفز بأي جائزة مسبقاً');
+            return $this->returnSuccessMessage('You Didn\'t win any Prices Before');
         }
 
     }
@@ -123,14 +121,14 @@ class GeneralController extends Controller
     public function priceDetails(PriceDetailsRequest $request)
     {
         $price = Price::whereId($request->id)->first();
-        return $this->successMessage(new PriceResource($price), 'بيانات الجائزة');
+        return $this->successMessage(new PriceResource($price), 'Price Details');
     }
 
     public function myNotifications(Request $request)
     {
         $player = \auth()->user();
         $notifications = $player->notification;
-        return $this->successMessage(NotificationResource::collection($notifications), 'الإشعارات');
+        return $this->successMessage(NotificationResource::collection($notifications), 'Notifications');
     }
     public function readNotification(Request $request)
     {
@@ -138,18 +136,18 @@ class GeneralController extends Controller
         $notification->update([
             'read_at' => now(),
         ]);
-        return $this->returnSuccessMessage('تم تغيير حالة الإشعار الي مقروء');
+        return $this->returnSuccessMessage('Notification Status Changed');
     }
 
 
     public function shops(Request $request)
     {
         $shops = Shop::get();
-        return $this->successMessage(ShopResource::collection($shops), 'جميع العروض');
+        return $this->successMessage(ShopResource::collection($shops), 'All Offers');
     }
     public function shopDetails(ShopDetailsRequest $request)
     {
         $shop = Shop::whereId($request->id)->first();
-        return $this->successMessage(new ShopResource($shop), 'بيانات العرض');
+        return $this->successMessage(new ShopResource($shop), 'Offer Details');
     }
 }
