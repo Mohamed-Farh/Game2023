@@ -104,6 +104,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('/my-latest-price', [ProfileController::class, 'myLatestPrice']);
         Route::get('/my-prices-table', [ProfileController::class, 'myPricesTable']);
         Route::post('/update-profile', [ProfileController::class, 'updateProfile']);
+        Route::post('/send-token-to-player', [ProfileController::class, 'sendTokenToPlayer']);
+        Route::get('/sender-transactions', [ProfileController::class, 'senderTransactions']);
+        Route::get('/receiver-transactions', [ProfileController::class, 'receiverTransactions']);
     });
 });
 

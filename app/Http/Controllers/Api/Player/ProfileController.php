@@ -3,24 +3,63 @@
 namespace App\Http\Controllers\Api\Player;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\SendTokenToPlayerRequest;
 use App\Http\Requests\Api\UpdateProfileRequest;
 use App\Http\Resources\Profile\MyPricesTableResource;
 use App\Http\Resources\Profile\PriceResource;
+use App\Http\Resources\Profile\TransactionResource;
 use App\Http\Resources\UserResource;
 use App\Models\PlayerPrice;
 use App\Models\Price;
+use App\Models\Transition;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
 
 class ProfileController extends Controller
 {
     use GeneralTrait;
+
+    public function sendTokenToPlayer(SendTokenToPlayerRequest $request)
+    {
+        /** take token from player **/
+        $player = User::whereId(\auth()->id())->first();
+        if($player->token_amount < $request->token_amount ){
+            return $this->successMessage(0,'Your Token Balance Is Not Enough');
+        }
+
+        if($request->id != ''){
+            $recive_player = User::whereId($request->id)->first();
+        }
+        if($request->username != ''){
+            $recive_player = User::whereUsername($request->username)->first();
+        }
+        $player->update([ 'token_amount' => ($player->token_amount) - ($request->token_amount) ]);
+        $recive_player->update([ 'token_amount' => ($recive_player->token_amount) + ($request->token_amount) ]);
+
+        $transition['sender_id']    = \auth()->id();
+        $transition['receiver_id']  = $recive_player->id;
+        $transition['amount']       = $request->token_amount;
+        $transition['created_at']   = now();
+        Transition::create($transition);
+
+        return $this->successMessage(1, 'The Token Was Sent Successfully');
+    }
+
+    public function senderTransactions(Request $request)
+    {
+        $myTransitions = Transition::whereSenderId(\auth()->id())->latest('id')->get();
+        return $this->successMessage( TransactionResource::collection($myTransitions), 'My Sender Transitions');
+    }
+    public function receiverTransactions(Request $request)
+    {
+        $myTransitions = Transition::whereReceiverId(\auth()->id())->latest('id')->get();
+        return $this->successMessage( TransactionResource::collection($myTransitions), 'My Receiver Transitions');
+    }
 
     public function myLatestPrice(Request $request)
     {

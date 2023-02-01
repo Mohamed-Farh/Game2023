@@ -11,6 +11,7 @@ use App\Models\GamePlayer;
 use App\Models\GameVote;
 use App\Models\HundredGame;
 use App\Models\PlayerPrice;
+use App\Models\User;
 use App\Traits\GeneralTrait;
 use Illuminate\Http\Request;
 
@@ -344,6 +345,12 @@ class HundredGameApiController extends Controller
                     $data = [
                         'expected_numbers' =>  $result,
                     ];
+                    /** take token from player **/
+                    $player= User::whereId(\auth()->id())->first();
+                    if($player->token_amount < env('HELP_HUNDRED_TOKEN') ){
+                        return $this->returnSuccessMessage('Your Token Balance Is Not Enough');
+                    }
+                    $buy_help = $player->token_amount - env('HELP_HUNDRED_TOKEN');
 
                     return $this->successMessage($data, 'Public Opinion');
                 }else{

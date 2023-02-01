@@ -345,6 +345,12 @@ class NineGameApiController extends Controller
                     $data = [
                         'expected_numbers' =>  $result,
                     ];
+                    /** take token from player **/
+                    $player= User::whereId(\auth()->id())->first();
+                    if($player->token_amount < env('HELP_NINE_TOKEN') ){
+                        return $this->returnSuccessMessage('Your Token Balance Is Not Enough');
+                    }
+                    $buy_help = $player->token_amount - env('HELP_NINE_TOKEN');
 
                     return $this->successMessage($data, 'Public Opinion');
                 }else{

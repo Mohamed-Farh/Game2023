@@ -142,7 +142,7 @@ class GeneralController extends Controller
 
     public function shops(Request $request)
     {
-        $shops = Shop::get();
+        $shops = Shop::whereActive(1)->latest('free')->get();
         return $this->successMessage(ShopResource::collection($shops), 'All Offers');
     }
     public function shopDetails(ShopDetailsRequest $request)
