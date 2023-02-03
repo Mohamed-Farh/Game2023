@@ -19,8 +19,10 @@ class NotificationResource extends JsonResource
     {
         if($this->type == 'Login'){
             $type_code = 0;
-        }elseif($this->type == 'Registration'){
+        }elseif($this->type == 'New Account'){
             $type_code = 1;
+        }elseif($this->type == 'Transition'){
+            $type_code = 2;
         }
 
 

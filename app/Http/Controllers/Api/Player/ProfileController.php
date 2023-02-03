@@ -15,6 +15,7 @@ use App\Models\Transition;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Traits\GeneralTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Intervention\Image\Facades\Image;
@@ -47,6 +48,26 @@ class ProfileController extends Controller
         $transition['created_at']   = now();
         Transition::create($transition);
 
+        /*** Start Notification ****/
+        $player->notification()->create([
+            'type'              => "Transition",
+            'notifiable_type'   => "User",
+            'notifiable_id'     => \auth()->id(),
+            'content'           => 'You Have Successfully Transferred ( '.$request->token_amount. ' ) Token To '.$recive_player->username. ' Personal Account',
+            'icon'              => 'images/icon/transaction.png',
+            'read_at'           => null,
+        ]);
+
+        $last_record = $player->notification()->create([
+            'type'              => "Transition",
+            'notifiable_type'   => "User",
+            'content'           => $player->username .' Has Transferred ( '.$request->token_amount. ' ) Token To Your Personal Account',
+            'icon'              => 'images/icon/transaction.png',
+            'read_at'           => null,
+        ]);
+        $last_record->update([ 'notifiable_id' => $recive_player->id ]);
+        /*** End Notification ****/
+
         return $this->successMessage(1, 'The Token Was Sent Successfully');
     }
 
@@ -63,9 +84,13 @@ class ProfileController extends Controller
 
     public function myLatestPrice(Request $request)
     {
-        $myLatestPrice = PlayerPrice::whereUserId(\auth()->id())->first();
-        $price = Price::whereId($myLatestPrice->price_id)->first();
-        return $this->successMessage((new PriceResource($price))->secondVariable($myLatestPrice), 'My Latest Price');
+        $myLatestPrice = PlayerPrice::whereUserId(\auth()->id())->latest('id')->first();
+        if($myLatestPrice){
+            $price = Price::whereId($myLatestPrice->price_id)->first();
+            return $this->successMessage((new PriceResource($price))->secondVariable($myLatestPrice), 'My Latest Price');
+        }
+        return $this->successMessage(0, "You Have not Win Any Price");
+
     }
 
     public function myPricesTable(Request $request)

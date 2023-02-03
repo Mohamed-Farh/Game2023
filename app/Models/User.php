@@ -58,7 +58,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function notification()
     {
-        return $this->MorphMany(Notification::class, 'notifiable');
+        return $this->MorphMany(Notification::class, 'notifiable')->latest('id');
     }
     public function getFullNameAttribute(): string
     {

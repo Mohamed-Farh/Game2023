@@ -7,8 +7,19 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Notification extends Model
 {
-    protected $guarded = [];
     protected $table = 'notifications';
+
+//    protected $guarded = [];
+    protected $fillable = [
+        'type',
+        'notifiable_type',
+        'notifiable_id',
+        'content',
+        'icon',
+        'read_at',
+        'created_at',
+        'updated_at',
+    ];
 
     public function notifiable(): MorphTo
     {

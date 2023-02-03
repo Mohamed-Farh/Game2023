@@ -49,12 +49,11 @@ class AuthController extends Controller
             $player -> token = $token;
 
             /*** Start Notification ****/
-            Carbon::setLocale('ar');
             $player->notification()->create([
                 'type'              => "Login",
                 'notifiable_type'   => "User",
                 'notifiable_id'     => $player->id,
-                'content'           => 'لقد تم تسجيل الدخول الي حسابك في يوم '. Carbon::parse(now())->translatedFormat('l j F Y H:i:s'),
+                'content'           => 'You have been logged into your account on the day of '. Carbon::parse(now())->translatedFormat('l j F Y H:i:s'),
                 'icon'              => 'images/icon/login.png',
                 'read_at'           => null,
             ]);
@@ -79,6 +78,8 @@ class AuthController extends Controller
             }
             while(!$is_code->isEmpty());
 
+            $input['first_name']    = $request->first_name;
+            $input['last_name']     = $request->last_name;
             $input['username']      = $request->username;
             $input['email']         = $request->email ?? null ;
             $input['email_verified_at']  = $request->email != null ? \Illuminate\Support\Carbon::now() : null;
@@ -141,12 +142,11 @@ class AuthController extends Controller
                 $player->token = $token;
 
                 /*** Start Notification ****/
-                Carbon::setLocale('ar');
                 $player->notification()->create([
                     'type'              => "New Account",
                     'notifiable_type'   => "User",
                     'notifiable_id'     => $player->id,
-                    'content'           => 'تهانينا, لقد تم إنشاء حساب جديد بنجاح',
+                    'content'           => 'Congratulations, Your Account Has Been Successfully Created',
                     'icon'              => 'images/icon/hi.png',
                     'read_at'           => null,
                 ]);
