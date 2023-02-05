@@ -49,7 +49,7 @@ class NineGameRequest extends FormRequest
                     'no_of_win_numbers' => ['required', 'integer'],
                     'win_numbers' => ['required'],
                     'timer' => ['required'],
-                    'start' => ['nullable', 'after_or_equal:now'],
+//                    'start' => ['nullable', 'after_or_equal:now'],
                     'end' => ['nullable', 'after:start'],
 
                     'price_name' => ['nullable'],

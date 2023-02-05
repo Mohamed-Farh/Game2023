@@ -28,26 +28,28 @@
                             <h1 class="text-center" style="text-decoration: underline;padding-bottom: 20px;">بيانات
                                 اللعبة</h1>
                             <div class="form-group">
-                                <label>الرقم الخاسر</label></label>
+                                <label>الرقم الخاسر</label>
                                 <input name="lose_number"  value="{{ old('lose_number') }}"
                                        type="number" class="form-control" min="1" max="9">
                                 @error('lose_number') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label> الوقت المحدد للمرحلة</label>
-                                <label class="mr-2" style="color: green"> يتم ادخال الوقت بالساعات</label>
+                                <label class="mr-2" style="color: #3699ff">( إذا تخطي اللاعب هذا الوقت سيخسر اللعبة )</label>
 
-                                <input name="timer" type="text"  value="{{ old('timer') }}" class="form-control">
+                                <input name="timer" type="text"  value="{{ old('timer', '00:01:00') }}" class="form-control">
                                 @error('timer') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label>وقت وتاريخ البداية</label>
+                                <label class="mr-2" style="color: #3699ff">( يجب ان يكون وقت وتاريخ البداية بعد الوقت الحالي )</label>
                                 <input name="start" type="datetime-local" value="{{ old('start') }}"
                                        class="form-control">
                                 @error('start') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label>وقت وتاريخ النهاية</label>
+                                <label class="mr-2" style="color: #3699ff">( يجب ان يكون وقت وتاريخ النهاية بعد وقت وتاريخ البداية )</label>
                                 <input name="end" type="datetime-local" value="{{ old('end') }}" class="form-control">
                                 @error('end') <span style="color: red">{{ $message }}</span> @enderror
                             </div>

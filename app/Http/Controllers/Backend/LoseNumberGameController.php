@@ -83,7 +83,7 @@ class LoseNumberGameController extends Controller
 
             $price = Price::create([
                 'game_id' => $game->id,
-                'game_type' => 'one',
+                'game_type' => 'loseNumber',
                 'name' => $request->price_name,
                 'description' => $request->price_description,
                 'value' => $request->price_value,
@@ -161,12 +161,6 @@ class LoseNumberGameController extends Controller
         if (!\auth()->user()->ability('superAdmin', 'manage_lose_number_games,update_lose_number_games')) {
             return redirect('admin/index');
         }
-        if(isset($request ->lose_number)){
-            if(count(explode(',', $request->lose_number)) != $request->no_of_lose_number){
-                Alert::error('عدد الارقام الفائزه لا يتناسب مع الارقام المدخلة', 'Error Message');
-                return redirect()->back();
-            }
-        }
 
         DB::beginTransaction();
         try {
@@ -240,7 +234,7 @@ class LoseNumberGameController extends Controller
         if (!\auth()->user()->ability('superAdmin', 'manage_lose_number_games,delete_lose_number_games')) {
             return redirect('admin/index');
         }
-        $game_player = GamePlayer::where('game_id', $loseNumberGame->id)->where('game_type', 'one')->first();
+        $game_player = GamePlayer::where('game_id', $loseNumberGame->id)->where('game_type', 'loseNumber')->first();
         if($game_player){
             Alert::alert('لا يمكن حذف هذه اللعبة لوجود لاعبين بها', 'Alert Message');
             return redirect(route('admin.lose-number-games.index'));

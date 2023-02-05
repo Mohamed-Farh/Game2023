@@ -34,7 +34,7 @@ class LoseNumberGameRequest extends FormRequest
                     'image' => ['nullable', 'mimes:png,jpg,jpeg,svg|', 'max:5048'],
 
                     'price_name' => ['required'],
-                    'price_value' => ['required', 'integer'],
+                    'price_value' => ['nullable', 'integer'],
                     'price_description' => ['required'],
                     'price_image' => ['nullable', 'mimes:png,jpg,jpeg,svg|', 'max:5048'],
                 ];

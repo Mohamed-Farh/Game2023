@@ -7,10 +7,10 @@
     <div class="container">
         <div class="card-header py-3 d-flex">
             <div class="col-6">
-                <h3 class="card-title card-title-new"> تعديل لعبة ( 8 رقم )</h3>
+                <h3 class="card-title card-title-new"> تعديل لعبة ( 9 رقم )</h3>
             </div>
             <div class="col-6 text-right">
-                <a href="{{ route('admin.nine-games.index') }}" class="btn btn-primary">
+                <a href="{{ route('admin.lose-number-games.index') }}" class="btn btn-primary">
                     <span class="icon text-white-50">
                         <i class="fa fa-home"></i>
                     </span>
@@ -20,7 +20,7 @@
         </div>
         <div class="card card-custom gutter-b example example-compact">
             <!--begin::Form-->
-            <form action="{{ route('admin.nine-games.update', $nineGame->id) }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('admin.lose-number-games.update', $loseNumberGame->id) }}" method="post" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
                 <div>
@@ -29,51 +29,44 @@
                             <h1 class="text-center" style="text-decoration: underline;padding-bottom: 20px;">بيانات
                                 اللعبة</h1>
                             <div class="form-group">
-                                <label>عدد الأرقام الفائزة</label>
-                                <input name="no_of_win_numbers" type="text" value="{{ old('no_of_win_numbers', $nineGame->no_of_win_numbers ) }}"
-                                       class="form-control">
-                                @error('no_of_win_numbers') <span
-                                    style="color: red">{{ $message }}</span> @enderror
-                            </div>
-                            <div class="form-group">
-                                <label>الأرقام الفائزة</label>
-                                <label class="mr-2" style="color:green">يرجى ادخال الارقام والفصل بينهم بفاصلة مثل
-                                    1,2,3</label>
-                                <input name="win_numbers" value="{{ old('win_numbers', $nineGame->win_numbers ) }}"
-                                       type="text" class="form-control">
-                                @error('win_numbers') <span style="color: red">{{ $message }}</span> @enderror
+                                <label>الرقم الخاسر</label>
+                                <input name="lose_number"  value="{{ old('lose_number', $loseNumberGame->lose_number ) }}"
+                                       type="number" class="form-control" min="1" max="9">
+                                @error('lose_number') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label> الوقت المحدد للمرحلة</label>
-                                <label class="mr-2" style="color: green"> يتم ادخال الوقت بالساعات</label>
+                                <label class="mr-2" style="color: #3699ff">( إذا تخطي اللاعب هذا الوقت سيخسر اللعبة )</label>
 
-                                <input name="timer" type="text" value="{{ old('timer', $nineGame->timer ) }}" class="form-control">
+                                <input name="timer" type="text" value="{{ old('timer', $loseNumberGame->timer ) }}" class="form-control">
                                 @error('timer') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label>وقت وتاريخ البداية</label>
-                                <input name="start" type="datetime-local" value="{{ old('start', $nineGame->start ) }}"
+{{--                                <label class="mr-2" style="color: #3699ff">( يجب ان يكون وقت وتاريخ البداية بعد الوقت الحالي )</label>--}}
+                                <input name="start" type="datetime-local" value="{{ old('start', $loseNumberGame->start ) }}"
                                        class="form-control">
                                 @error('start') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label>وقت وتاريخ النهاية</label>
-                                <input name="end" type="datetime-local" value="{{ old('end', $nineGame->end ) }}" class="form-control">
+                                <label class="mr-2" style="color: #3699ff">( يجب ان يكون وقت وتاريخ النهاية بعد وقت وتاريخ البداية )</label>
+                                <input name="end" type="datetime-local" value="{{ old('end', $loseNumberGame->end ) }}" class="form-control">
                                 @error('end') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label>الحالة</label>
                                 <select name="active" class="form-control">
-                                    <option value="1" {{ old('active',  $nineGame->active) == 1 ? 'selected' : null }}>نشط</option>
-                                    <option value="0" {{ old('active',  $nineGame->active) == 0 ? 'selected' : null }}>غير نشط</option>
+                                    <option value="1" {{ old('active',  $loseNumberGame->active) == 1 ? 'selected' : null }}>نشط</option>
+                                    <option value="0" {{ old('active',  $loseNumberGame->active) == 0 ? 'selected' : null }}>غير نشط</option>
                                 </select>
                                 @error('active')<span class="text-danger">{{ $message }}</span>@enderror
                             </div>
                             <div class="form-group">
                                 <label>الصورة</label>
                                 <div class="text-center">
-                                    @if( $nineGame->image != '')
-                                        <img height="120" width="150" src="{{ asset($nineGame->image) }}">
+                                    @if( $loseNumberGame->image != '')
+                                        <img height="120" width="150" src="{{ asset($loseNumberGame->image) }}">
                                     @else
                                         <img height="120" width="150" src="{{ asset('images/no-image.png') }}">
                                     @endif
@@ -92,33 +85,33 @@
                                     <label style="font-weight: bolder;">جائزة التوكن</label>
                                 </div>
                                 <div class="col-9">
-                                    <input name="win_tokens" type="number" min="1" value="{{ old('win_tokens', $nineGame->basicPrice()->win_tokens) }}" class="form-control">
+                                    <input name="win_tokens" type="number" min="1" value="{{ old('win_tokens', $loseNumberGame->basicPrice()->win_tokens) }}" class="form-control">
                                 </div>
                                 @error('win_tokens') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="form-group">
                                 <label>اسم الجائزة</label>
-                                <input name="price_name" type="text" value="{{ old('price_name', $nineGame->basicPrice()->name ) }}" class="form-control">
+                                <input name="price_name" type="text" value="{{ old('price_name', $loseNumberGame->basicPrice()->name ) }}" class="form-control">
                                 @error('price_name') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label>سعر الجائزة</label>
-                                <input name="price_value" type="number" value="{{ old('price_value', $nineGame->basicPrice()->value ) }}" class="form-control"
+                                <input name="price_value" type="number" value="{{ old('price_value', $loseNumberGame->basicPrice()->value ) }}" class="form-control"
                                        min="0.00" step="0.01">
                                 @error('price_price') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label>وصف الجائزة</label>
-                                <textarea name="price_description" class="form-control" rows="5">{!! old('price_description', $nineGame->basicPrice()->description ) !!}</textarea>
+                                <textarea name="price_description" class="form-control" rows="5">{!! old('price_description', $loseNumberGame->basicPrice()->description ) !!}</textarea>
                                 @error('price_description') <span
                                     style="color: red">{{ $message }}</span> @enderror
                             </div>
                             <div class="form-group">
                                 <label>صورة الجائزة</label>
                                 <div class="text-center">
-                                    @if( $nineGame->basicPrice()->image != '')
-                                        <img height="120" width="150" src="{{ asset($nineGame->basicPrice()->image) }}">
+                                    @if( $loseNumberGame->basicPrice()->image != '')
+                                        <img height="120" width="150" src="{{ asset($loseNumberGame->basicPrice()->image) }}">
                                     @else
                                         <img height="120" width="150" src="{{ asset('images/no-image.png') }}">
                                     @endif

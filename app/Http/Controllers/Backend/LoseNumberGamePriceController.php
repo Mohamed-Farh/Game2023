@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Backend\PriceRequest;
-use App\Models\NineGame;
+use App\Models\LoseNumberGame;
 use App\Models\Price;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -38,14 +37,14 @@ class LoseNumberGamePriceController extends Controller
         if (!\auth()->user()->ability('superAdmin', 'manage_price,create_price')) {
             return redirect('admin/index');
         }
-        $nineGame = NineGame::findOrFail($request->nineGame);
-        return view('backend.nine-games.prices.create', compact('nineGame'));
+        $loseNumberGame = LoseNumberGame::findOrFail($request->loseNumberGame);
+        return view('backend.lose-number-games.prices.create', compact('loseNumberGame'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\NineGame\StoreNineGameRequest  $request
+     * @param  \App\Http\Requests\LoseNumberGame\StoreLoseNumberGameRequest  $request
      * @return \Illuminate\Http\Response
      */
     public function store(PriceRequest $request)
@@ -53,7 +52,7 @@ class LoseNumberGamePriceController extends Controller
         if (!\auth()->user()->ability('superAdmin', 'manage_price,create_price')) {
             return redirect('admin/index');
         }
-        $nineGame = NineGame::findOrFail($request->nineGame);
+        $loseNumberGame = LoseNumberGame::findOrFail($request->loseNumberGame);
 
         // Price data
         do{
@@ -63,14 +62,15 @@ class LoseNumberGamePriceController extends Controller
         while(!$is_code->isEmpty());
 
         $price = Price::create([
-            'game_id' => $nineGame->id,
-            'game_type' => 'nine',
+            'game_id' => $loseNumberGame->id,
+            'game_type' => 'loseNumber',
             'name' => $request->price_name,
             'description' => $request->price_description,
             'value' => $request->price_value,
             'code' => $code,
             'start_time' => $request->start,
             'end_time' => $request->end,
+            'win_tokens' => $request->win_tokens ?? 0,
         ]);
 
         if ($price_image = $request->file('price_image')) {
@@ -85,16 +85,16 @@ class LoseNumberGamePriceController extends Controller
         ]);
 
         Alert::success('تم اضافة الجائزة', 'Success Message');
-        return redirect(route('admin.nine-games.showPrices', $nineGame->id));
+        return redirect(route('admin.lose-number-games.showPrices', $loseNumberGame->id));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\NineGame  $nineGame
+     * @param  \App\Models\LoseNumberGame  $loseNumberGame
      * @return \Illuminate\Http\Response
      */
-    public function show(NineGame $nineGame)
+    public function show(LoseNumberGame $loseNumberGame)
     {
         //
     }
@@ -102,7 +102,7 @@ class LoseNumberGamePriceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\NineGame  $nineGame
+     * @param  \App\Models\LoseNumberGame  $loseNumberGame
      * @return \Illuminate\Http\Response
      */
     public function edit(Request $request, Price $price)
@@ -111,15 +111,15 @@ class LoseNumberGamePriceController extends Controller
             return redirect('admin/index');
         }
         $price = Price::findOrFail($request->price_id);
-        $nineGame = NineGame::findOrFail($price->game_id);
-        return view('backend.nine-games.prices.edit', compact('price', 'nineGame'));
+        $loseNumberGame = LoseNumberGame::findOrFail($price->game_id);
+        return view('backend.lose-number-games.prices.edit', compact('price', 'loseNumberGame'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\NineGame\UpdateNineGameRequest  $request
-     * @param  \App\Models\NineGame  $nineGame
+     * @param  \App\Http\Requests\LoseNumberGame\UpdateLoseNumberGameRequest  $request
+     * @param  \App\Models\LoseNumberGame  $loseNumberGame
      * @return \Illuminate\Http\Response
      */
     public function update(PriceRequest $request, Price $price)
@@ -135,6 +135,7 @@ class LoseNumberGamePriceController extends Controller
             'value' => $request->price_value,
             'start_time' => $request->start,
             'end_time' => $request->end,
+            'win_tokens' => $request->win_tokens ?? 0,
             'active' => $request->active,
         ]);
 
@@ -151,13 +152,13 @@ class LoseNumberGamePriceController extends Controller
             $price->update([ 'image' => $path, ]);
         }
         Alert::success('تم تعديل الجائزة', 'Success Message');
-        return redirect(route('admin.nine-games.showPrices', $price->game_id));
+        return redirect(route('admin.lose-number-games.showPrices', $price->game_id));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\NineGame  $nineGame
+     * @param  \App\Models\LoseNumberGame  $loseNumberGame
      * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, Price $price)
@@ -166,7 +167,7 @@ class LoseNumberGamePriceController extends Controller
             return redirect('admin/index');
         }
         $price = Price::findOrFail($request->price_id);
-        $nineGame = NineGame::findOrFail($price->game_id);
+        $loseNumberGame = LoseNumberGame::findOrFail($price->game_id);
 
         if (File::exists($price->image)) :
             unlink($price->image);
@@ -174,7 +175,7 @@ class LoseNumberGamePriceController extends Controller
         $price->delete();
 
         Alert::success('تم حذف الجائزة', 'Success Message');
-        return redirect(route('admin.nine-games.showPrices', $nineGame->id));
+        return redirect(route('admin.lose-number-games.showPrices', $loseNumberGame->id));
     }
 
     public function removeImage(Request $request)

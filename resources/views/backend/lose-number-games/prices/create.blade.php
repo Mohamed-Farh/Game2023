@@ -4,13 +4,23 @@
 
 @section('content')
 
+    <style>
+        .price_token {
+            background-color: #b3ceea;
+            -webkit-box-shadow: 0 0.5rem 1.5rem 0.5rem rgb(0 0 0 / 8%);
+            box-shadow: 0 0.5rem 1.5rem 0.5rem rgb(0 0 0 / 8%);
+            height: 10%;
+            text-align: center;
+            /*padding-top: 3%;*/
+        }
+    </style>
     <div class="container">
         <div class="card-header py-3 d-flex">
             <div class="col-6">
                 <h3 class="card-title card-title-new"> اضافة جائزة جديدة</h3>
             </div>
             <div class="col-6 text-right">
-                <a href="{{ route('admin.nine-games.showPrices', $nineGame->id) }}" class="btn btn-primary">
+                <a href="{{ route('admin.lose-number-games.showPrices', $loseNumberGame->id) }}" class="btn btn-primary">
                     <span class="icon text-white-50">
                         <i class="fa fa-home"></i>
                     </span>
@@ -20,11 +30,11 @@
         </div>
         <div class="card card-custom gutter-b example example-compact">
             <!--begin::Form-->
-            <form action="{{ route('admin.nine-games-prices.store', ['nineGame' => $nineGame]) }}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('admin.lose-number-games-prices.store', ['loseNumberGame' => $loseNumberGame]) }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div>
                     <div class="card-body row">
-                        <div class="col-9">
+                        <div class="col-6">
                             <div class="form-group">
                                 <label>اسم الجائزة</label>
                                 <input name="price_name" type="text" class="form-control">
@@ -37,6 +47,13 @@
                                 <input name="price_value" type="number" class="form-control"
                                        min="0.00" step="0.01">
                                 @error('price_price') <span style="color: red">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                        <div class="col-3 price_token">
+                            <div class="form-group">
+                                <label style="font-weight: bolder;">جائزة التوكن</label>
+                                <input name="win_tokens" type="number" min="1" value="{{ old('win_tokens') }}" class="form-control">
+                                @error('win_tokens') <span style="color: red">{{ $message }}</span> @enderror
                             </div>
                         </div>
                         <div class="col-12">
