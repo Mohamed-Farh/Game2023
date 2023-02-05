@@ -17,6 +17,7 @@ class LoseNumberGameResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "no_of_win_numbers" => 8,
             "lose_number" => $this->lose_number,
             "timer" => $this->timer ?? '',
             "start" => $this->start,

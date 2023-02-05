@@ -18,7 +18,11 @@
         <!--begin::Header-->
         <div class="row d-flex align-items-center mt-5">
             <div class="col-12 symbol symbol-100 mr-20">
-                <div class="symbol-label" style="background-image:url(' {{ asset(Auth::user()->user_image) }} ')">
+                @if( Auth::user()->user_image != '' )
+                    <div class="symbol-label" style="background-image:url(' {{ asset(Auth::user()->user_image) }} ')">
+                @else
+                    <div class="symbol-label" style="background-image:url(' {{ asset('images/user/avatar.png') }} ')">
+                @endif
                 </div>
             </div>
             <div class="col -12d-flex flex-column">

