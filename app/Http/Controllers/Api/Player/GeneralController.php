@@ -109,6 +109,7 @@ class GeneralController extends Controller
     {
         $latest_price = PlayerPrice::where('user_id', \auth()->id())
             ->whereActive(1)
+            ->latest('id')
             ->first();
         if($latest_price){
             return $this->successMessage(new PlayerPriceResource($latest_price), 'The last Prise You Won');
