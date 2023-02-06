@@ -7,7 +7,8 @@
 
 <title>4FARH | @yield('title')</title>
 
-<link rel="shortcut icon" href="{{ asset('frontend/img/4FARH_Logo.png') }}">
+<!-- Favicon-->
+<link rel="shortcut icon" href="{{ asset('images/icon.png') }}">
 
 <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 <link rel="stylesheet" href="{{ asset('frontend/css/custom.css') }}">

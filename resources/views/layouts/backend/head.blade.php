@@ -38,7 +38,7 @@
 <link rel="shortcut icon" href="{{ asset('backend/assets/media/logos/favicon.ico') }}" />
 
 <!-- Favicon-->
-<link rel="shortcut icon" href="{{ asset('frontend/img/4FARH_Logo.png') }}">
+<link rel="shortcut icon" href="{{ asset('images/icon.png') }}">
 
 {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
 
