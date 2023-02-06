@@ -34,8 +34,8 @@
 <link href="{{ asset('backend/assets/css/themes/layout/aside/dark.rtl.css')}}" rel="stylesheet" type="text/css"/>
 
 
-<!--end::Layout Themes-->
-<link rel="shortcut icon" href="{{ asset('backend/assets/media/logos/favicon.ico') }}" />
+{{--<!--end::Layout Themes-->--}}
+{{--<link rel="shortcut icon" href="{{ asset('backend/assets/media/logos/favicon.ico') }}" />--}}
 
 <!-- Favicon-->
 <link rel="shortcut icon" href="{{ asset('images/icon.png') }}">

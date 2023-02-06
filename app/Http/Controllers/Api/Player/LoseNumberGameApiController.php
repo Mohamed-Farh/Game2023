@@ -330,7 +330,8 @@ class LoseNumberGameApiController extends Controller
                     if($player->token_amount < env('HELP_LOSE_NUMBER_TOKEN') ){
                         return $this->returnSuccessMessage('Your Token Balance Is Not Enough');
                     }
-                    $buy_help = $player->token_amount - env('HELP_LOSE_NUMBER_TOKEN');
+//                    $buy_help = $player->token_amount - env('HELP_LOSE_NUMBER_TOKEN');
+                    $player->update([ 'token_amount' => ($player->token_amount) - env('HELP_LOSE_NUMBER_TOKEN') ]);
 
                     return $this->successMessage($data, 'Public Opinion');
                 }else{
