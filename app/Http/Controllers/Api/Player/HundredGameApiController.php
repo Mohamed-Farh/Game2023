@@ -263,7 +263,7 @@ class HundredGameApiController extends Controller
                         'numbers' => $request_numbers,
                         'vote' => 1
                     ]);
-                    return $this->returnSuccessMessage('Successfully Adding Your Voting');
+                    return $this->successMessage(1,'Successfully Adding Your Voting');
                 }else{
                     return $this->returnErrorMessage('يرجي ادخال العدد الصحيح من الارقام', '422');
                 }
